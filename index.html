@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Inventory ERP</title>
+<style>
+  /* PASTE ALL YOUR EXISTING CSS HERE (From your original code) */
+  body { margin:0; font-family:Arial, sans-serif; background:#f4f6f9; color: #333; overflow-x: hidden; }
+  .sidebar { position:fixed; width:200px; height:100vh; background:#1e1e2f; color:white; padding:20px; box-sizing: border-box; z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.2); }
+  .sidebar h2 { margin-top:0; border-bottom: 1px solid #333; padding-bottom: 15px; }
+  .sidebar a { display:block; color:#ccc; text-decoration:none; padding:12px 0; cursor:pointer; font-weight: 500; transition: color 0.2s;}
+  .sidebar a:hover, .sidebar a.active { color:#f47c3c; }
+  .main { margin-left:200px; padding:30px; width: calc(100% - 200px); box-sizing: border-box; }
+  .flex { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:30px; align-items: stretch; }
+  .flex .card { display: flex; flex-direction: column; background:white; padding:25px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+  .gauge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .card-standard { background:white; padding:25px; border-radius:12px; margin-bottom:25px; box-shadow:0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }
+  .gauge { text-align:center; padding: 20px; background: #fafbfc; border-radius: 8px; border: 1px solid #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  button { padding:14px 22px; background:#f47c3c; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width: 100%;}
+  table { width:100%; border-collapse:collapse; margin-top: 10px; }
+  th, td { padding:14px; border-bottom:1px solid #eee; text-align:left; }
+  .toast { position:fixed; top:20px; right:20px; background:#4CAF50; color:white; padding:15px 25px; border-radius:8px; display:none; z-index:999999; }
+  .toast.error { background:#e74c3c; }
+
+  /* Bottleneck Modal Styles */
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 10000; }
+  .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 450px; width: 90%; text-align: center; }
+  .bottleneck-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; text-align: left; }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+
+<body>
+<div id="bottleneckModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Production Bottlenecks</h2>
+    <p style="color: #666;">Items limiting your maximum build capacity:</p>
+    <div id="bottleneckList"></div>
+    <button onclick="closeModal()" style="margin-top: 20px;">I Understand</button>
+  </div>
+</div>
+
+<div class="sidebar">
+  <h2>Inventory ERP</h2>
+  <a id="nav-dashboard" onclick="showPage('dashboard')" class="active">Dashboard</a>
+  <a id="nav-stock" onclick="showPage('stock')">Stock</a>
+  <a id="nav-inStock" onclick="showPage('inStock')">In Stock</a>
+  <a id="nav-outStock" onclick="showPage('outStock')">Out Stock</a>
+  <a id="nav-vendors" onclick="showPage('vendors')">Vendors</a>
+</div>
+
+<div class="main">
+  <div id="dashboard" class="page">
+    <h1>Dashboard</h1>
+    <div class="card-standard">
+      <h2>Kit Capacity Overview</h2>
+      <div class="gauge-grid" id="gaugeContainer"><span>Connecting...</span></div>
+    </div>
+    <div class="flex">
+      <div class="card">
+        <h2>Dispatch Kit (OUT)</h2>
+        <select id="kitSelect"><option></option></select>
+        <input type="number" id="kitQty" placeholder="Quantity">
+        <select id="deliveryPartner">
+          <option></option>
+          <option>DTDC</option><option>Delhivery</option>
+        </select>
+        <button id="btnDispatch" onclick="dispatch()">Dispatch</button>
+      </div>
+      <div class="card">
+        <h2>Stock Entry (IN)</h2>
+        <select id="stockSelect"><option></option></select>
+        <input type="number" id="stockQty" placeholder="Quantity">
+        <button id="btnStock" onclick="submitStockEntry()">Add Stock</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="stock" class="page" style="display:none"><h1>Stock Summary</h1><table id="stockTable"></table></div>
+  <div id="inStock" class="page" style="display:none"><h1>Incoming History</h1><table id="inStockTable"></table></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmfAKrxY863eZoz8TQjypFzr-4j1FSuoslOqNr-m1GWU40VLD3ArkKtA9tbkV2GsJu6A/exec"; 
+
+async function callBackend(action, payload = {}) {
+  try {
+    const response = await fetch(WEB_APP_URL, {
+      method: "POST",
+      body: JSON.stringify({ action, payload })
+    });
+    return await response.json();
+  } catch (e) {
+    showToast("Server Connection Failed", true);
+    return null;
+  }
+}
+
+let appData = {};
+
+async function fetchAllData() {
+  const data = await callBackend("getInitialPayload");
+  if (data) {
+    appData = data;
+    renderDashboard(data.predictions);
+    renderDropdowns(data.products, data.kits, data.vendors);
+  }
+}
+
+function renderDashboard(predictions) {
+  let html = ""; let bList = "";
+  predictions.kits.forEach(k => {
+    html += `<div class="gauge"><h3>${k.kit}</h3><text font-size="30">${k.capacity}</text></div>`;
+    bList += `<div class="bottleneck-row"><b>${k.kit}</b> <span>Limit: ${k.bottleneck}</span></div>`;
+  });
+  document.getElementById("gaugeContainer").innerHTML = html;
+
+  if (!sessionStorage.getItem('bottleneckShown')) {
+    document.getElementById("bottleneckList").innerHTML = bList;
+    document.getElementById("bottleneckModal").style.display = "flex";
+    sessionStorage.setItem('bottleneckShown', 'true');
+  }
+}
+
+function closeModal() { document.getElementById("bottleneckModal").style.display = "none"; }
+function showPage(p) { /* Your existing page switching logic */ }
+function showToast(m, e) { /* Your existing toast logic */ }
+
+window.onload = fetchAllData;
+</script>
+</body>
+</html>
