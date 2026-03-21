@@ -685,12 +685,77 @@ function loadMonthlyReports() {
 function loadHeatmap() {
   const month = document.getElementById("heatmapMonth").value;
   const year = document.getElementById("heatmapYear").value;
-  document.getElementById("heatmapContainer").innerHTML = "Loading...";
+  const chartDom = document.getElementById("heatmapContainer");
+
+  // CRITICAL FIX: Properly destroy the old map before loading new data
+  const existingChart = echarts.getInstanceByDom(chartDom);
+  if (existingChart) {
+    echarts.dispose(existingChart);
+  }
+
+  // Show a nicely centered loading text
+  chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; font-weight:bold; color:#f47c3c;'>Loading map...</div>";
 
   apiCall("getStateHeatmap", "GET", { month, year }).then(data => {
-    if (!data || data.length === 0) { document.getElementById("heatmapContainer").innerHTML = "No Data Found"; return; }
+    if (!data || data.length === 0) { 
+      chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:#888;'>No Data Found for this month</div>"; 
+      return; 
+    }
+    
+    // Clear the loading text so ECharts has a clean slate to draw on
+    chartDom.innerHTML = "";
     renderHeatmap(data);
+  }).catch(err => {
+    chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:red;'>Error loading data</div>";
   });
+}
+
+function renderHeatmap(data) {
+  const chartDom = document.getElementById('heatmapContainer');
+  const myChart = echarts.init(chartDom);
+
+  fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
+    .then(res => {
+      if (!res.ok) throw new Error("Map file not found");
+      return res.json();
+    })
+    .then(geoJson => {
+      echarts.registerMap('india', geoJson);
+      
+      let maxValue = Math.max(...data.map(d => d.value));
+      if (maxValue === 0 || !isFinite(maxValue)) maxValue = 10; 
+      
+      myChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}<br/>Total Dispatched: {c}' },
+        visualMap: { 
+          min: 0, 
+          max: maxValue, 
+          text: ['High', 'Low'],
+          inRange: { color: ['#fff3e0', '#ffb74d', '#f47c3c', '#d84315', '#990000'] },
+          calculable: true
+        },
+        series: [{ 
+          type: 'map', 
+          map: 'india', 
+          data: data,
+          roam: true, 
+          label: { show: false },
+          itemStyle: {
+            borderColor: '#9e9e9e',
+            borderWidth: 1,
+            areaColor: '#f4f6f9' 
+          },
+          emphasis: { 
+            itemStyle: { areaColor: '#f1c40f', borderColor: '#333', borderWidth: 1.5 },
+            label: { show: true, color: '#000', fontWeight: 'bold' } 
+          }
+        }]
+      });
+    })
+    .catch(err => {
+      console.error("Map Load Error:", err);
+      chartDom.innerHTML = "<p style='color:red; text-align:center; padding-top:200px;'>Failed to load the map graphic.</p>";
+    });
 }
 
 function renderHeatmap(data) {
