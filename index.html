@@ -696,15 +696,42 @@ function loadHeatmap() {
 function renderHeatmap(data) {
   const chartDom = document.getElementById('heatmapContainer');
   const myChart = echarts.init(chartDom);
-  fetch("https://raw.githubusercontent.com/apache/echarts/5.4.3/test/data/geo/India.json")
-    .then(res => res.json())
+
+  // CHANGED: Using a reliable GeoJSON CDN that is compatible with ECharts
+  fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
+    .then(res => {
+      if (!res.ok) throw new Error("Map file not found");
+      return res.json();
+    })
     .then(geoJson => {
       echarts.registerMap('india', geoJson);
       const maxValue = Math.max(...data.map(d => d.value), 100);
+      
       myChart.setOption({
-        visualMap: { min: 0, max: maxValue, inRange: { color: ['#e0f3f8', '#f47c3c'] } },
-        series: [{ type: 'map', map: 'india', data: data }]
+        tooltip: { 
+          trigger: 'item', 
+          formatter: '{b}<br/>Total Dispatched: {c}' 
+        },
+        visualMap: { 
+          min: 0, 
+          max: maxValue, 
+          text: ['High', 'Low'],
+          inRange: { color: ['#e0f3f8', '#f47c3c'] },
+          calculable: true
+        },
+        series: [{ 
+          type: 'map', 
+          map: 'india', 
+          data: data,
+          roam: true, 
+          label: { show: false },
+          emphasis: { label: { show: true } }
+        }]
       });
+    })
+    .catch(err => {
+      console.error("Map Load Error:", err);
+      document.getElementById("heatmapContainer").innerHTML = "<p style='color:red; text-align:center;'>Failed to load the map graphic.</p>";
     });
 }
 </script>
