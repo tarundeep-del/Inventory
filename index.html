@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Inventory ERP</title>
+
 <style>
-  /* PASTE ALL YOUR EXISTING CSS HERE (From your original code) */
   body { margin:0; font-family:Arial, sans-serif; background:#f4f6f9; color: #333; overflow-x: hidden; }
   .sidebar { position:fixed; width:200px; height:100vh; background:#1e1e2f; color:white; padding:20px; box-sizing: border-box; z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.2); }
   .sidebar h2 { margin-top:0; border-bottom: 1px solid #333; padding-bottom: 15px; }
@@ -13,43 +13,74 @@
   .sidebar a:hover, .sidebar a.active { color:#f47c3c; }
   .main { margin-left:200px; padding:30px; width: calc(100% - 200px); box-sizing: border-box; }
   .flex { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:30px; align-items: stretch; }
-  .flex .card { display: flex; flex-direction: column; background:white; padding:25px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
-  .gauge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .flex .card { display: flex; flex-direction: column; background:white; padding:25px; border-radius:12px; margin-bottom:0; box-shadow:0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }
+  .flex .card h2 { margin-top: 0; margin-bottom: 20px; }
+  .flex .card button { margin-top: auto; } 
+  .gauge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: stretch; }
   .card-standard { background:white; padding:25px; border-radius:12px; margin-bottom:25px; box-shadow:0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }
+  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .page-header h1 { margin: 0; }
   .gauge { text-align:center; padding: 20px; background: #fafbfc; border-radius: 8px; border: 1px solid #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  button { padding:14px 22px; background:#f47c3c; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width: 100%;}
-  table { width:100%; border-collapse:collapse; margin-top: 10px; }
+  .gauge h3 { min-height:48px; font-size:16px; margin:0 0 15px 0; color: #555; width: 100%; text-align: center; }
+  input[type="text"], input[type="number"], input[type="date"], select, textarea { height: 46px; padding: 10px 14px; margin: 0 0 15px 0; width: 100%; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: Arial, sans-serif; font-size: 14px; }
+  textarea { height: auto; } 
+  input[type="file"] { height: auto; padding: 0; margin-bottom: 15px; border: none; }
+  .select2-container { width: 100% !important; margin: 0 0 15px 0 !important; }
+  .select2-container .select2-selection--single { height: 46px !important; border: 1px solid #ccc !important; border-radius: 6px !important; display: flex !important; align-items: center !important; }
+  .select2-container--default .select2-selection--single .select2-selection__rendered { padding-left: 14px !important; font-size: 14px; color: #444 !important; }
+  .select2-container--default .select2-selection--single .select2-selection__arrow { height: 46px !important; right: 8px !important; }
+  .select2-dropdown { z-index: 99999 !important; }
+  button { padding:14px 22px; background:#f47c3c; border:none; border-radius:6px; color:white; font-size: 15px; font-weight:bold; cursor:pointer; transition: background 0.2s; width: 100%;}
+  button:hover { background:#e0642b; }
+  button:disabled { background: #ccc; cursor: not-allowed; opacity: 0.7; }
+  table { width:100%; border-collapse:collapse; margin-top: 10px; min-width: 600px; }
   th, td { padding:14px; border-bottom:1px solid #eee; text-align:left; }
-  .toast { position:fixed; top:20px; right:20px; background:#4CAF50; color:white; padding:15px 25px; border-radius:8px; display:none; z-index:999999; }
+  th { background:#f9fafb; font-weight: 600; color: #666; }
+  tr:hover { background: #fdfdfd; }
+  .toast { position:fixed; top:20px; right:20px; background:#4CAF50; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 6px 15px rgba(0,0,0,0.2); font-weight:bold; display:none; z-index:999999; animation: slideIn 0.3s; }
   .toast.error { background:#e74c3c; }
-
-  /* Bottleneck Modal Styles */
-  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 10000; }
-  .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 450px; width: 90%; text-align: center; }
-  .bottleneck-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; text-align: left; }
+  @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  .loading { color: #888; font-style: italic; }
+  .status-low { color: #e74c3c; font-weight: bold; background: #fceceb; padding: 4px 8px; border-radius: 4px; }
+  .btn-link { color: #f47c3c; font-weight: bold; text-decoration: none; }
+  .btn-link:hover { text-decoration: underline; }
+  .btn-small { padding: 6px 12px; font-size: 13px; background: #2c3e50; border-radius: 4px; width: auto; }
+  .btn-small:hover { background: #1e2b38; }
+  .btn-cancel { background: #888; display: none; width: auto; }
+  .btn-cancel:hover { background: #666; }
+  .checkbox-group { margin: 0 0 15px 0; font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 600; color: #444; height: 46px; }
+  .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; margin: 0; cursor: pointer; }
+  .checkbox-group input[type="number"] { width: 100px; margin: 0; margin-left: auto; }
+  @media (max-width: 768px) {
+    .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: 60px; display: flex; flex-direction: row; overflow-x: auto; white-space: nowrap; padding: 10px; align-items: center; gap: 15px; }
+    .sidebar h2 { display: none; }
+    .sidebar a { display: inline-block; padding: 8px 15px; margin: 0; border-radius: 20px; background: #2c3e50; color: #fff; }
+    .sidebar a.active { background: #f47c3c; }
+    .main { margin-left: 0; margin-top: 60px; width: 100%; padding: 15px; }
+    .flex { grid-template-columns: 1fr; }
+    .gauge-grid { grid-template-columns: 1fr; }
+    .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .gauge svg { width: 100%; max-width: 220px; }
+  }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 </head>
 
 <body>
-<div id="bottleneckModal" class="modal-overlay">
-  <div class="modal-content">
-    <h2>Production Bottlenecks</h2>
-    <p style="color: #666;">Items limiting your maximum build capacity:</p>
-    <div id="bottleneckList"></div>
-    <button onclick="closeModal()" style="margin-top: 20px;">I Understand</button>
-  </div>
-</div>
-
 <div class="sidebar">
   <h2>Inventory ERP</h2>
   <a id="nav-dashboard" onclick="showPage('dashboard')" class="active">Dashboard</a>
   <a id="nav-stock" onclick="showPage('stock')">Stock</a>
+  <a id="nav-lowStock" onclick="showPage('lowStock')">Low Stock</a>
   <a id="nav-inStock" onclick="showPage('inStock')">In Stock</a>
   <a id="nav-outStock" onclick="showPage('outStock')">Out Stock</a>
+  <a id="nav-heatmap" onclick="showPage('heatmap')">Heatmap</a>
+  <a id="nav-bills" onclick="showPage('bills')">Bills History</a>
   <a id="nav-vendors" onclick="showPage('vendors')">Vendors</a>
+  <a id="nav-reports" onclick="showPage('reports')">Reports</a>
 </div>
 
 <div class="main">
@@ -57,8 +88,9 @@
     <h1>Dashboard</h1>
     <div class="card-standard">
       <h2>Kit Capacity Overview</h2>
-      <div class="gauge-grid" id="gaugeContainer"><span>Connecting...</span></div>
+      <div class="gauge-grid" id="gaugeContainer"><span class="loading">Loading dashboard...</span></div>
     </div>
+    
     <div class="flex">
       <div class="card">
         <h2>Dispatch Kit (OUT)</h2>
@@ -66,72 +98,615 @@
         <input type="number" id="kitQty" placeholder="Quantity">
         <select id="deliveryPartner">
           <option></option>
-          <option>DTDC</option><option>Delhivery</option>
+          <option value="DTDC">DTDC</option>
+          <option value="Delhivery">Delhivery</option>
+          <option value="Trackon">Trackon</option>
+          <option value="India Post">India Post</option>
         </select>
-        <button id="btnDispatch" onclick="dispatch()">Dispatch</button>
+        <button id="btnDispatch" onclick="dispatch()">Dispatch Kit</button>
       </div>
+      
       <div class="card">
         <h2>Stock Entry (IN)</h2>
         <select id="stockSelect"><option></option></select>
         <input type="number" id="stockQty" placeholder="Quantity">
+        <select id="vendorSelect"><option></option></select>
+        <input type="number" id="stockPrice" placeholder="Unit Price (₹)">
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hasGst" onchange="toggleGst()">
+          <label for="hasGst">Apply GST</label>
+          <input type="number" id="gstPercent" placeholder="GST %" style="display: none;">
+        </div>
         <button id="btnStock" onclick="submitStockEntry()">Add Stock</button>
+      </div>
+
+      <div class="card">
+        <h2>Upload Bill (Purchase)</h2>
+        <input type="text" id="billProductName" placeholder="Product Name">
+        <input type="date" id="billDate">
+        <input type="number" id="billQty" placeholder="Quantity">
+        <label style="display:block; margin: 0 0 10px; font-size:13px; font-weight:bold; color:#555;">File (Image or PDF):</label>
+        <input type="file" id="billFile" accept="image/*,.pdf">
+        <button id="btnSubmitBill" onclick="processBill()">Save Bill</button>
       </div>
     </div>
   </div>
 
-  <div id="stock" class="page" style="display:none"><h1>Stock Summary</h1><table id="stockTable"></table></div>
-  <div id="inStock" class="page" style="display:none"><h1>Incoming History</h1><table id="inStockTable"></table></div>
-</div>
+  <div id="stock" class="page" style="display:none">
+    <h1>Current Stock Summary</h1>
+    <div class="card-standard">
+      <table>
+        <thead><tr><th>Product</th><th>Quantity Available</th></tr></thead>
+        <tbody id="stockTable"></tbody>
+      </table>
+    </div>
+  </div>
 
+  <div id="lowStock" class="page" style="display:none">
+    <h1>Low Stock Alerts</h1>
+    <div class="card-standard">
+      <table>
+        <thead><tr><th>Product</th><th>Current Stock</th><th>Status</th></tr></thead>
+        <tbody id="lowStockTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="inStock" class="page" style="display:none">
+    <h1>Incoming Transactions</h1>
+    <div class="card-standard">
+      <table>
+        <thead><tr><th>Date & Time</th><th>Item Added</th><th>Vendor</th><th>Qty</th><th>Total Cost</th><th>Stock After</th></tr></thead>
+        <tbody id="inStockTable"><tr><td colspan="6">Loading history...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="outStock" class="page" style="display:none">
+    <h1>Kit Dispatches (Outbound)</h1>
+    <div class="card-standard">
+      <table>
+        <thead><tr><th>Date & Time</th><th>Kit Dispatched</th><th>Partner</th><th>Quantity</th></tr></thead>
+        <tbody id="outStockTable"><tr><td colspan="4">Loading history...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="bills" class="page" style="display:none">
+    <h1>Purchase & Bills History</h1>
+    <div class="card-standard">
+      <table>
+        <thead><tr><th>Logged On</th><th>Bill Date</th><th>Product Name</th><th>Qty</th><th>Attachment</th></tr></thead>
+        <tbody id="billsTable"><tr><td colspan="5">Loading bills...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="vendors" class="page" style="display:none">
+    <div class="page-header">
+      <h1>Vendor Management</h1>
+      <button id="btnToggleVendor" onclick="toggleVendorForm()" style="width:auto;">+ Add Vendor</button>
+    </div>
+    
+    <div class="card-standard" id="vendorFormCard" style="display:none;">
+      <h2 id="vendorFormTitle">Add New Vendor</h2>
+      <input type="hidden" id="vendorId">
+      <input type="text" id="vendorName" placeholder="Vendor Name" style="max-width: 400px;">
+      <input type="text" id="vendorMobile" placeholder="Mobile Number" style="max-width: 400px;">
+      <textarea id="vendorProducts" placeholder="Products they supply" rows="3" style="max-width: 400px; resize: vertical;"></textarea>
+      
+      <div style="display: flex; gap: 10px;">
+        <button id="btnSaveVendor" onclick="submitVendor()" style="width:auto;">Save Vendor</button>
+        <button id="btnCancelVendor" class="btn-cancel" onclick="toggleVendorForm(false)">Cancel</button>
+      </div>
+    </div>
+
+    <div class="card-standard">
+      <h2>Vendor List</h2>
+      <table>
+        <thead><tr><th>Vendor Name</th><th>Mobile Number</th><th>Products Provided</th><th>Action</th></tr></thead>
+        <tbody id="vendorsTable"><tr><td colspan="4">Loading vendors...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="heatmap" class="page" style="display:none">
+    <h1>State Heatmap</h1>
+    <div class="card-standard">
+      <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+        <select id="heatmapMonth" style="width:150px;">
+          <option value="1">January</option><option value="2">February</option>
+          <option value="3">March</option><option value="4">April</option>
+          <option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option>
+          <option value="9">September</option><option value="10">October</option>
+          <option value="11">November</option><option value="12">December</option>
+        </select>
+        <input type="number" id="heatmapYear" value="2026" style="width:120px;">
+        <button onclick="loadHeatmap()" style="width:auto;">Generate Heatmap</button>
+      </div>
+      <div id="heatmapContainer" style="height:500px;"></div>
+    </div>
+  </div>
+
+  <div id="reports" class="page" style="display:none">
+    <h1>Reports & Analytics</h1>
+    <div class="card-standard">
+      <h2>Data Exports</h2>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <button onclick="triggerExport('exportStockCSV', 'Stock_Summary.csv')" style="width:auto;">📥 Export Stock</button>
+        <button onclick="triggerExport('exportInCSV', 'Inbound_History.csv')" style="width:auto;">📥 Export Inbound</button>
+        <button onclick="triggerExport('exportOutCSV', 'Dispatch_History.csv')" style="width:auto;">📥 Export Dispatches</button>
+      </div>
+    </div>
+
+    <div class="card-standard">
+      <h2>All-Time Kit Popularity</h2>
+      <button onclick="loadKitAnalytics()" style="width:auto; margin-bottom:15px;">Load Analytics</button>
+      <table>
+        <thead><tr><th>Kit Name</th><th>Total Lifetime Dispatches</th></tr></thead>
+        <tbody id="analyticsTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card-standard">
+      <h2>Monthly Review</h2>
+      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+        <select id="reportMonth" style="width:150px; margin:0;">
+          <option value="1">January</option><option value="2">February</option>
+          <option value="3">March</option><option value="4">April</option>
+          <option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option>
+          <option value="9">September</option><option value="10">October</option>
+          <option value="11">November</option><option value="12">December</option>
+        </select>
+        <input type="number" id="reportYear" value="2026" style="width:100px; margin:0;">
+        <button onclick="loadMonthlyReports()" style="width:auto; margin:0;">Generate Report</button>
+      </div>
+      <div class="flex">
+        <div class="card">
+          <h3>Kits Built/Dispatched</h3>
+          <table>
+            <thead><tr><th>Kit Name</th><th>Qty</th></tr></thead>
+            <tbody id="monthlyKitTable"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Raw Components Consumed</h3>
+          <table>
+            <thead><tr><th>Component</th><th>Qty Used</th></tr></thead>
+            <tbody id="monthlyConsumptionTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
 <div id="toast" class="toast"></div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmfAKrxY863eZoz8TQjypFzr-4j1FSuoslOqNr-m1GWU40VLD3ArkKtA9tbkV2GsJu6A/exec"; 
+// ⚠️ IMPORTANT: REPLACE THIS URL WITH YOUR GAS DEPLOYMENT WEB APP URL
+const API_URL = "https://script.google.com/macros/s/AKfycbyBiErzmUMozCssOP-xSaWdLCgLNE7-hz8be-uvLG-Ql-KqgxAws6dTM8BKRn8Ao4qmxQ/exec";
 
-async function callBackend(action, payload = {}) {
+/* =========================
+   API Wrapper
+========================= */
+async function apiCall(action, method = 'GET', data = {}) {
+  let url = API_URL;
+  let options = { redirect: "follow" }; // Needed for Google scripts
+
+  if (method === 'GET') {
+    const params = new URLSearchParams({ action, ...data });
+    url = `${API_URL}?${params.toString()}`;
+    options.method = 'GET';
+  } else {
+    options.method = 'POST';
+    // Using text/plain avoids CORS preflight OPTIONS requests to Google Servers
+    options.headers = { "Content-Type": "text/plain;charset=utf-8" };
+    options.body = JSON.stringify({ action, data });
+  }
+
   try {
-    const response = await fetch(WEB_APP_URL, {
-      method: "POST",
-      body: JSON.stringify({ action, payload })
-    });
-    return await response.json();
-  } catch (e) {
-    showToast("Server Connection Failed", true);
-    return null;
+    const response = await fetch(url, options);
+    const result = await response.json();
+    if (result.error) throw new Error(result.error);
+    return result;
+  } catch (error) {
+    console.error("API Error:", error);
+    showToast("Error connecting to server. Check console.", true);
+    throw error;
   }
 }
 
-let appData = {};
+/* =========================
+   Global Data Cache
+========================= */
+let appData = { stockSummary: [], products: [], kits: [], predictions: {}, vendors: [] };
+let cachedVendors = [];
 
-async function fetchAllData() {
-  const data = await callBackend("getInitialPayload");
-  if (data) {
-    appData = data;
+/* =========================
+   UI Utilities
+========================= */
+function showToast(message, isError=false){
+  const toast = document.getElementById("toast");
+  toast.innerText = message;
+  toast.className = `toast ${isError ? 'error' : ''}`;
+  toast.style.display = "block";
+  setTimeout(() => toast.style.display = "none", 3500);
+}
+
+function toggleButtons(disabled) {
+  document.getElementById("btnDispatch").disabled = disabled;
+  document.getElementById("btnStock").disabled = disabled;
+  document.getElementById("btnSubmitBill").disabled = disabled;
+  
+  document.getElementById("btnDispatch").innerText = disabled ? "Processing..." : "Dispatch Kit";
+  document.getElementById("btnStock").innerText = disabled ? "Processing..." : "Add Stock";
+  document.getElementById("btnSubmitBill").innerText = disabled ? "Uploading..." : "Save Bill";
+}
+
+function formatDate(dateString){
+  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short'}); } catch(e) { return dateString || ""; }
+}
+
+function formatDateTime(dateString){
+  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'}); } catch(e) { return dateString || ""; }
+}
+
+function toggleGst() {
+  const gstInput = document.getElementById("gstPercent");
+  if (document.getElementById("hasGst").checked) { gstInput.style.display = "block"; } else { gstInput.style.display = "none"; gstInput.value = ""; }
+}
+
+/* =========================
+   Navigation & Initialization
+========================= */
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p => p.style.display = "none");
+  document.getElementById(page).style.display = "block";
+
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+  document.getElementById('nav-' + page).classList.add('active');
+
+  if(page === "stock") renderStock(appData.stockSummary);
+  if(page === "lowStock") renderLowStock(appData.stockSummary);
+  if(page === "inStock") loadInStock();
+  if(page === "outStock") loadOutStock();
+  if(page === "bills") loadBillsHistory();
+  if(page === "vendors") loadVendors();
+  if(page === "heatmap"){
+    const d = new Date();
+    document.getElementById('heatmapMonth').value = d.getMonth() + 1;
+    document.getElementById('heatmapYear').value = d.getFullYear();
+    loadHeatmap();
+  }
+  if(page === "reports"){
+    const d = new Date();
+    document.getElementById('reportMonth').value = d.getMonth() + 1;
+    document.getElementById('reportYear').value = d.getFullYear();
+  }
+}
+
+function fetchAllData() {
+  document.getElementById("gaugeContainer").innerHTML = '<span class="loading">Syncing data with server...</span>';
+  
+  apiCall("getInitialPayload").then(data => {
+    appData = data; 
     renderDashboard(data.predictions);
     renderDropdowns(data.products, data.kits, data.vendors);
-  }
-}
-
-function renderDashboard(predictions) {
-  let html = ""; let bList = "";
-  predictions.kits.forEach(k => {
-    html += `<div class="gauge"><h3>${k.kit}</h3><text font-size="30">${k.capacity}</text></div>`;
-    bList += `<div class="bottleneck-row"><b>${k.kit}</b> <span>Limit: ${k.bottleneck}</span></div>`;
+    renderStock(data.stockSummary);
+    renderLowStock(data.stockSummary);
+    toggleButtons(false);
   });
-  document.getElementById("gaugeContainer").innerHTML = html;
+}
 
-  if (!sessionStorage.getItem('bottleneckShown')) {
-    document.getElementById("bottleneckList").innerHTML = bList;
-    document.getElementById("bottleneckModal").style.display = "flex";
-    sessionStorage.setItem('bottleneckShown', 'true');
+window.onload = function() { fetchAllData(); };
+
+/* =========================
+   Core Rendering
+========================= */
+function renderDashboard(predictions) {
+  if(!predictions || !predictions.kits || predictions.kits.length === 0) {
+    document.getElementById("gaugeContainer").innerHTML = "<p>No kit configurations found.</p>"; return;
+  }
+  let html = ""; 
+  predictions.kits.forEach(k => { html += createGauge(k.kit, k.capacity, k.capacity || 1); });
+  document.getElementById("gaugeContainer").innerHTML = html;
+}
+
+function createGauge(title, value, max){
+  const safePercent = Math.min(max ? (value/max) : 0, 1);
+  const circumference = Math.PI * 90;
+  const offset = circumference - safePercent * circumference;
+
+  return `
+    <div class="gauge">
+      <h3>${title}</h3>
+      <svg width="220" height="110" viewBox="0 0 220 120">
+        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#e9ecef" stroke-width="20"/>
+        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#f47c3c" stroke-width="20" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+        <text x="110" y="95" text-anchor="middle" font-size="36" font-weight="bold" fill="#2c3e50">${Math.round(value)}</text>
+      </svg>
+    </div>`;
+}
+
+function renderStock(data){
+  const html = data.map(r => `<tr><td>${r.product}</td><td>${Number(r.stock).toLocaleString()}</td></tr>`).join('');
+  document.getElementById("stockTable").innerHTML = html || "<tr><td colspan='2'>No products found</td></tr>";
+}
+
+function renderLowStock(data){
+  const rows = data.filter(r => r.status === "LOW").map(r => `<tr><td>${r.product}</td><td>${Number(r.stock).toLocaleString()}</td><td><span class="status-low">RESTOCK</span></td></tr>`);
+  document.getElementById("lowStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='3'>All stock levels are optimal.</td></tr>";
+}
+
+function renderDropdowns(products, kits, vendors){
+  const stockSelect = $("#stockSelect"), kitSelect = $("#kitSelect"), vendorSelect = $("#vendorSelect"), partnerSelect = $("#deliveryPartner");
+
+  if (stockSelect.hasClass("select2-hidden-accessible")) stockSelect.select2('destroy');
+  if (kitSelect.hasClass("select2-hidden-accessible")) kitSelect.select2('destroy');
+  if (vendorSelect.hasClass("select2-hidden-accessible")) vendorSelect.select2('destroy');
+  if (partnerSelect.hasClass("select2-hidden-accessible")) partnerSelect.select2('destroy');
+
+  const prodHtml = '<option></option>' + products.map(p => `<option value="${p}">${p}</option>`).join('');
+  const kitHtml = '<option></option>' + kits.map(k => `<option value="${k}">${k}</option>`).join('');
+  const vendorHtml = '<option></option>' + (vendors || []).map(v => `<option value="${v.name}">${v.name}</option>`).join('');
+
+  stockSelect.html(prodHtml).select2({ placeholder: "Search Item...", width: '100%' });
+  kitSelect.html(kitHtml).select2({ placeholder: "Search Kit...", width: '100%' });
+  vendorSelect.html(vendorHtml).select2({ placeholder: "Select Vendor (Optional)", width: '100%' });
+  partnerSelect.select2({ placeholder: "Select Delivery Partner...", width: '100%', minimumResultsForSearch: Infinity });
+}
+
+/* =========================
+   Transactions Actions
+========================= */
+function dispatch(){
+  const kit = document.getElementById("kitSelect").value;
+  const qty = document.getElementById("kitQty").value;
+  const partner = document.getElementById("deliveryPartner").value;
+
+  if(!kit || !qty || qty <= 0) return showToast("Please select a kit and valid quantity.", true);
+  if(!partner) return showToast("Please select a Delivery Partner.", true);
+
+  toggleButtons(true);
+  
+  apiCall("dispatchKit", "POST", { kit, qty, partner }).then(res => {
+    showToast(res.message, res.message.includes("Insufficient"));
+    document.getElementById("kitQty").value = ''; 
+    $("#kitSelect").val(null).trigger('change'); 
+    $("#deliveryPartner").val(null).trigger('change'); 
+    fetchAllData();
+  }).catch(() => toggleButtons(false));
+}
+
+function submitStockEntry(){
+  const payload = {
+    product: document.getElementById("stockSelect").value,
+    qty: document.getElementById("stockQty").value,
+    vendor: document.getElementById("vendorSelect").value,
+    price: document.getElementById("stockPrice").value,
+    hasGst: document.getElementById("hasGst").checked,
+    gstPercent: document.getElementById("gstPercent").value
+  };
+
+  if(!payload.product || !payload.qty || payload.qty <= 0) return showToast("Please select an item and valid quantity.", true);
+
+  toggleButtons(true);
+  
+  apiCall("addStock", "POST", payload).then(res => {
+    showToast(res.message);
+    document.getElementById("stockQty").value = ''; 
+    document.getElementById("stockPrice").value = ''; 
+    document.getElementById("hasGst").checked = false;
+    document.getElementById("gstPercent").value = '';
+    document.getElementById("gstPercent").style.display = 'none';
+    
+    $("#stockSelect").val(null).trigger('change'); 
+    $("#vendorSelect").val(null).trigger('change'); 
+    fetchAllData(); 
+  }).catch(() => toggleButtons(false));
+}
+
+function processBill() {
+  const productName = document.getElementById("billProductName").value;
+  const date = document.getElementById("billDate").value;
+  const qty = document.getElementById("billQty").value;
+  const fileInput = document.getElementById("billFile");
+
+  if (!productName || !date || !qty) return showToast("Please fill in the Product Name, Date, and Quantity.", true);
+
+  toggleButtons(true);
+  const file = fileInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      sendBillToBackend({ productName, date, qty, fileData: e.target.result, fileName: file.name, mimeType: file.type });
+    };
+    reader.readAsDataURL(file); 
+  } else {
+    sendBillToBackend({ productName, date, qty, fileData: null, fileName: null, mimeType: null });
   }
 }
 
-function closeModal() { document.getElementById("bottleneckModal").style.display = "none"; }
-function showPage(p) { /* Your existing page switching logic */ }
-function showToast(m, e) { /* Your existing toast logic */ }
+function sendBillToBackend(payload) {
+  apiCall("uploadBill", "POST", payload).then(res => {
+    showToast(res.message, res.message.includes("Error"));
+    toggleButtons(false);
+    
+    document.getElementById("billProductName").value = '';
+    document.getElementById("billDate").value = '';
+    document.getElementById("billQty").value = '';
+    document.getElementById("billFile").value = '';
+  }).catch(() => toggleButtons(false));
+}
 
-window.onload = fetchAllData;
+/* =========================
+   Vendors Logic
+========================= */
+function toggleVendorForm(forceShow = null) {
+  const card = document.getElementById("vendorFormCard"), btn = document.getElementById("btnToggleVendor");
+  const shouldShow = forceShow !== null ? forceShow : card.style.display === "none";
+
+  if (shouldShow) {
+    card.style.display = "block"; btn.innerText = "✖ Close Form"; btn.style.background = "#e74c3c"; 
+  } else {
+    card.style.display = "none"; btn.innerText = "+ Add Vendor"; btn.style.background = "#f47c3c"; resetVendorForm();
+  }
+}
+
+function loadVendors() {
+  document.getElementById("vendorsTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching vendors...</td></tr>";
+  apiCall("getVendors").then(data => {
+    cachedVendors = data;
+    const rows = data.map(v => `<tr><td>${v.name}</td><td>${v.mobile || '-'}</td><td>${v.products}</td><td><button class="btn-small" onclick="editVendor('${v.id}')">Edit</button></td></tr>`);
+    document.getElementById("vendorsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No vendors recorded yet.</td></tr>";
+  });
+}
+
+function submitVendor() {
+  const payload = {
+    id: document.getElementById("vendorId").value,
+    name: document.getElementById("vendorName").value,
+    mobile: document.getElementById("vendorMobile").value,
+    products: document.getElementById("vendorProducts").value
+  };
+
+  if (!payload.name || !payload.products) return showToast("Please fill in the Vendor Name and Products.", true);
+
+  const btn = document.getElementById("btnSaveVendor");
+  btn.disabled = true; btn.innerText = "Saving...";
+
+  apiCall("saveVendor", "POST", payload).then(res => {
+    showToast(res.message, res.message.includes("Error"));
+    toggleVendorForm(false); 
+    loadVendors(); 
+    fetchAllData(); 
+  });
+}
+
+function editVendor(id) {
+  const vendor = cachedVendors.find(v => v.id === id);
+  if (!vendor) return;
+
+  toggleVendorForm(true);
+  document.getElementById("vendorFormTitle").innerText = "Edit Vendor";
+  document.getElementById("vendorId").value = vendor.id;
+  document.getElementById("vendorName").value = vendor.name;
+  document.getElementById("vendorMobile").value = vendor.mobile || ''; 
+  document.getElementById("vendorProducts").value = vendor.products;
+  
+  document.getElementById("btnCancelVendor").style.display = "inline-block";
+  document.getElementById("btnSaveVendor").innerText = "Update Vendor";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetVendorForm() {
+  document.getElementById("vendorFormTitle").innerText = "Add New Vendor";
+  document.getElementById("vendorId").value = '';
+  document.getElementById("vendorName").value = '';
+  document.getElementById("vendorMobile").value = ''; 
+  document.getElementById("vendorProducts").value = '';
+  document.getElementById("btnCancelVendor").style.display = "none";
+  
+  const btnSave = document.getElementById("btnSaveVendor");
+  btnSave.disabled = false; btnSave.innerText = "Save Vendor";
+}
+
+/* =========================
+   Table Fetches & Reports
+========================= */
+function loadInStock(){
+  document.getElementById("inStockTable").innerHTML = "<tr><td colspan='6' class='loading'>Fetching latest transactions...</td></tr>";
+  apiCall("getTransactions").then(data => {
+    const rows = data.inStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.item}</td><td>${r.vendor}</td><td style="color:green; font-weight:bold;">+${r.qty}</td><td>₹${Number(r.totalPrice).toFixed(2)}</td><td>${Math.round(r.updatedStock)}</td></tr>`);
+    document.getElementById("inStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='6'>No data</td></tr>";
+  });
+}
+
+function loadOutStock(){
+  document.getElementById("outStockTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching latest transactions...</td></tr>";
+  apiCall("getTransactions").then(data => {
+    const rows = data.outStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.kit}</td><td>${r.partner}</td><td style="color:red; font-weight:bold;">-${r.qty}</td></tr>`);
+    document.getElementById("outStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No data</td></tr>";
+  });
+}
+
+function loadBillsHistory() {
+  document.getElementById("billsTable").innerHTML = "<tr><td colspan='5' class='loading'>Fetching bills...</td></tr>";
+  apiCall("getBillsHistory").then(data => {
+    const rows = data.slice().reverse().map(r => {
+      let fileLink = (r.fileUrl && r.fileUrl !== "No File Uploaded") ? `<a href="${r.fileUrl}" target="_blank" class="btn-link">📄 View Bill</a>` : "No File attached";
+      return `<tr><td>${formatDateTime(r.timestamp)}</td><td>${formatDate(r.date)}</td><td>${r.productName}</td><td>${r.qty}</td><td>${fileLink}</td></tr>`;
+    });
+    document.getElementById("billsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='5'>No bills recorded yet.</td></tr>";
+  });
+}
+
+function triggerExport(action, filename) {
+  showToast("Compiling CSV...");
+  apiCall(action).then(res => {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([res.csv], { type: 'text/csv' }));
+    link.download = filename;
+    link.click();
+    showToast("Download started!");
+  });
+}
+
+function loadKitAnalytics() {
+  document.getElementById("analyticsTable").innerHTML = "<tr><td colspan='2' class='loading'>Calculating...</td></tr>";
+  apiCall("getKitAnalytics").then(data => {
+    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([kit, qty]) => `<tr><td>${kit}</td><td>${qty}</td></tr>`);
+    document.getElementById("analyticsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No data</td></tr>";
+  });
+}
+
+function loadMonthlyReports() {
+  const month = document.getElementById("reportMonth").value;
+  const year = document.getElementById("reportYear").value;
+
+  document.getElementById("monthlyKitTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>";
+  document.getElementById("monthlyConsumptionTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>";
+
+  apiCall("getMonthlyReport", "GET", { month, year }).then(data => {
+    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k, q]) => `<tr><td>${k}</td><td>${q}</td></tr>`);
+    document.getElementById("monthlyKitTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No dispatches</td></tr>";
+  });
+
+  apiCall("getConsumptionReport", "GET", { month, year }).then(data => {
+    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([i, q]) => `<tr><td>${i}</td><td>${q}</td></tr>`);
+    document.getElementById("monthlyConsumptionTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No consumption</td></tr>";
+  });
+}
+
+function loadHeatmap() {
+  const month = document.getElementById("heatmapMonth").value;
+  const year = document.getElementById("heatmapYear").value;
+  document.getElementById("heatmapContainer").innerHTML = "Loading...";
+
+  apiCall("getStateHeatmap", "GET", { month, year }).then(data => {
+    if (!data || data.length === 0) { document.getElementById("heatmapContainer").innerHTML = "No Data Found"; return; }
+    renderHeatmap(data);
+  });
+}
+
+function renderHeatmap(data) {
+  const chartDom = document.getElementById('heatmapContainer');
+  const myChart = echarts.init(chartDom);
+  fetch("https://raw.githubusercontent.com/apache/echarts/5.4.3/test/data/geo/India.json")
+    .then(res => res.json())
+    .then(geoJson => {
+      echarts.registerMap('india', geoJson);
+      const maxValue = Math.max(...data.map(d => d.value), 100);
+      myChart.setOption({
+        visualMap: { min: 0, max: maxValue, inRange: { color: ['#e0f3f8', '#f47c3c'] } },
+        series: [{ type: 'map', map: 'india', data: data }]
+      });
+    });
+}
 </script>
 </body>
 </html>
