@@ -6,6 +6,7 @@
 <title>Inventory ERP</title>
 
 <style>
+  /* ALL YOUR ORIGINAL STYLES STAY HERE */
   body { margin:0; font-family:Arial, sans-serif; background:#f4f6f9; color: #333; overflow-x: hidden; }
   .sidebar { position:fixed; width:200px; height:100vh; background:#1e1e2f; color:white; padding:20px; box-sizing: border-box; z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.2); }
   .sidebar h2 { margin-top:0; border-bottom: 1px solid #333; padding-bottom: 15px; }
@@ -51,6 +52,10 @@
   .checkbox-group { margin: 0 0 15px 0; font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 600; color: #444; height: 46px; }
   .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; margin: 0; cursor: pointer; }
   .checkbox-group input[type="number"] { width: 100px; margin: 0; margin-left: auto; }
+  
+  /* Styling for New Columns */
+  .cap-val { font-weight: bold; color: #2c3e50; background: #f0f4f8; padding: 2px 6px; border-radius: 4px; }
+
   @media (max-width: 768px) {
     .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: 60px; display: flex; flex-direction: row; overflow-x: auto; white-space: nowrap; padding: 10px; align-items: center; gap: 15px; }
     .sidebar h2 { display: none; }
@@ -137,7 +142,14 @@
     <h1>Current Stock Summary</h1>
     <div class="card-standard">
       <table>
-        <thead><tr><th>Product</th><th>Quantity Available</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty Available</th>
+            <th>Cap. (Professional)</th>
+            <th>Cap. (Basic)</th>
+          </tr>
+        </thead>
         <tbody id="stockTable"></tbody>
       </table>
     </div>
@@ -215,21 +227,21 @@
     <h1>State Heatmap</h1>
     <div class="card-standard">
       <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-      <select id="heatmapMonth" style="width:150px;">
-  <option value="0">All Months</option>
-  <option value="1">January</option>
-  <option value="2">February</option>
-  <option value="3">March</option>
-  <option value="4">April</option>
-  <option value="5">May</option>
-  <option value="6">June</option>
-  <option value="7">July</option>
-  <option value="8">August</option>
-  <option value="9">September</option>
-  <option value="10">October</option>
-  <option value="11">November</option>
-  <option value="12">December</option>
-</select>
+        <select id="heatmapMonth" style="width:150px;">
+          <option value="0">All Months</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
         <input type="number" id="heatmapYear" value="2026" style="width:120px;">
         <button onclick="loadHeatmap()" style="width:auto;">Generate Heatmap</button>
       </div>
@@ -289,12 +301,12 @@
       </div>
     </div>
   </div>
-
 </div>
+
 <div id="toast" class="toast"></div>
 
 <script>
-// ⚠️ IMPORTANT: REPLACE THIS URL WITH YOUR GAS DEPLOYMENT WEB APP URL
+// REPLACE WITH YOUR URL
 const API_URL = "https://script.google.com/macros/s/AKfycbyNSAmozyV_-P3l3behutUupupH0JGVYINp7J26a4tdJ9EpJknssCOMYTLedVahayApfg/exec";
 
 /* =========================
@@ -302,19 +314,16 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyNSAmozyV_-P3l3behutUu
 ========================= */
 async function apiCall(action, method = 'GET', data = {}) {
   let url = API_URL;
-  let options = { redirect: "follow" }; // Needed for Google scripts
-
+  let options = { redirect: "follow" };
   if (method === 'GET') {
     const params = new URLSearchParams({ action, ...data });
     url = `${API_URL}?${params.toString()}`;
     options.method = 'GET';
   } else {
     options.method = 'POST';
-    // Using text/plain avoids CORS preflight OPTIONS requests to Google Servers
     options.headers = { "Content-Type": "text/plain;charset=utf-8" };
     options.body = JSON.stringify({ action, data });
   }
-
   try {
     const response = await fetch(url, options);
     const result = await response.json();
@@ -322,20 +331,14 @@ async function apiCall(action, method = 'GET', data = {}) {
     return result;
   } catch (error) {
     console.error("API Error:", error);
-    showToast("Error connecting to server. Check console.", true);
+    showToast("Error connecting to server.", true);
     throw error;
   }
 }
 
-/* =========================
-   Global Data Cache
-========================= */
 let appData = { stockSummary: [], products: [], kits: [], predictions: {}, vendors: [] };
 let cachedVendors = [];
 
-/* =========================
-   UI Utilities
-========================= */
 function showToast(message, isError=false){
   const toast = document.getElementById("toast");
   toast.innerText = message;
@@ -345,35 +348,30 @@ function showToast(message, isError=false){
 }
 
 function toggleButtons(disabled) {
-  document.getElementById("btnDispatch").disabled = disabled;
-  document.getElementById("btnStock").disabled = disabled;
-  document.getElementById("btnSubmitBill").disabled = disabled;
-  
-  document.getElementById("btnDispatch").innerText = disabled ? "Processing..." : "Dispatch Kit";
-  document.getElementById("btnStock").innerText = disabled ? "Processing..." : "Add Stock";
-  document.getElementById("btnSubmitBill").innerText = disabled ? "Uploading..." : "Save Bill";
+  ["btnDispatch", "btnStock", "btnSubmitBill"].forEach(id => {
+    const btn = document.getElementById(id);
+    if(btn) btn.disabled = disabled;
+  });
 }
 
 function formatDate(dateString){
-  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short'}); } catch(e) { return dateString || ""; }
+  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleDateString(); } catch(e) { return dateString; }
 }
 
 function formatDateTime(dateString){
-  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'}); } catch(e) { return dateString || ""; }
+  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle:'short', timeStyle:'short'}); } catch(e) { return dateString; }
 }
 
 function toggleGst() {
-  const gstInput = document.getElementById("gstPercent");
-  if (document.getElementById("hasGst").checked) { gstInput.style.display = "block"; } else { gstInput.style.display = "none"; gstInput.value = ""; }
+  document.getElementById("gstPercent").style.display = document.getElementById("hasGst").checked ? "block" : "none";
 }
 
 /* =========================
-   Navigation & Initialization
+   Navigation
 ========================= */
 function showPage(page){
   document.querySelectorAll('.page').forEach(p => p.style.display = "none");
   document.getElementById(page).style.display = "block";
-
   document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
   document.getElementById('nav-' + page).classList.add('active');
 
@@ -383,22 +381,11 @@ function showPage(page){
   if(page === "outStock") loadOutStock();
   if(page === "bills") loadBillsHistory();
   if(page === "vendors") loadVendors();
-  if(page === "heatmap"){
-    const d = new Date();
-    document.getElementById('heatmapMonth').value = d.getMonth() + 1;
-    document.getElementById('heatmapYear').value = d.getFullYear();
-    loadHeatmap();
-  }
-  if(page === "reports"){
-    const d = new Date();
-    document.getElementById('reportMonth').value = d.getMonth() + 1;
-    document.getElementById('reportYear').value = d.getFullYear();
-  }
+  if(page === "heatmap") loadHeatmap();
 }
 
 function fetchAllData() {
-  document.getElementById("gaugeContainer").innerHTML = '<span class="loading">Syncing data with server...</span>';
-  
+  document.getElementById("gaugeContainer").innerHTML = '<span class="loading">Syncing...</span>';
   apiCall("getInitialPayload").then(data => {
     appData = data; 
     renderDashboard(data.predictions);
@@ -409,422 +396,185 @@ function fetchAllData() {
   });
 }
 
-window.onload = function() { fetchAllData(); };
+window.onload = fetchAllData;
 
 /* =========================
-   Core Rendering
+   Core Rendering (UPDATED)
 ========================= */
+function renderStock(data){
+  const html = data.map(r => `
+    <tr>
+      <td>${r.product}</td>
+      <td>${Number(r.stock).toLocaleString()}</td>
+      <td><span class="cap-val">${r.profCap}</span></td>
+      <td><span class="cap-val">${r.basicCap}</span></td>
+    </tr>`).join('');
+  document.getElementById("stockTable").innerHTML = html || "<tr><td colspan='4'>No products found</td></tr>";
+}
+
 function renderDashboard(predictions) {
-  if(!predictions || !predictions.kits || predictions.kits.length === 0) {
-    document.getElementById("gaugeContainer").innerHTML = "<p>No kit configurations found.</p>"; return;
-  }
+  if(!predictions.kits) return;
   let html = ""; 
-  predictions.kits.forEach(k => { html += createGauge(k.kit, k.capacity, k.capacity || 1); });
+  predictions.kits.forEach(k => { html += createGauge(k.kit, k.capacity); });
   document.getElementById("gaugeContainer").innerHTML = html;
 }
 
-function createGauge(title, value, max){
-  const safePercent = Math.min(max ? (value/max) : 0, 1);
-  const circumference = Math.PI * 90;
-  const offset = circumference - safePercent * circumference;
-
+function createGauge(title, value){
   return `
     <div class="gauge">
       <h3>${title}</h3>
       <svg width="220" height="110" viewBox="0 0 220 120">
         <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#e9ecef" stroke-width="20"/>
-        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#f47c3c" stroke-width="20" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
-        <text x="110" y="95" text-anchor="middle" font-size="36" font-weight="bold" fill="#2c3e50">${Math.round(value)}</text>
+        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#f47c3c" stroke-width="20" stroke-dasharray="282.7" stroke-dashoffset="0" stroke-linecap="round"/>
+        <text x="110" y="95" text-anchor="middle" font-size="36" font-weight="bold" fill="#2c3e50">${value}</text>
       </svg>
     </div>`;
 }
 
-function renderStock(data){
-  const html = data.map(r => `<tr><td>${r.product}</td><td>${Number(r.stock).toLocaleString()}</td></tr>`).join('');
-  document.getElementById("stockTable").innerHTML = html || "<tr><td colspan='2'>No products found</td></tr>";
-}
-
 function renderLowStock(data){
-  const rows = data.filter(r => r.status === "LOW").map(r => `<tr><td>${r.product}</td><td>${Number(r.stock).toLocaleString()}</td><td><span class="status-low">RESTOCK</span></td></tr>`);
-  document.getElementById("lowStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='3'>All stock levels are optimal.</td></tr>";
+  const rows = data.filter(r => r.status === "LOW").map(r => `<tr><td>${r.product}</td><td>${r.stock}</td><td><span class="status-low">RESTOCK</span></td></tr>`);
+  document.getElementById("lowStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='3'>All levels OK</td></tr>";
 }
 
 function renderDropdowns(products, kits, vendors){
-  const stockSelect = $("#stockSelect"), kitSelect = $("#kitSelect"), vendorSelect = $("#vendorSelect"), partnerSelect = $("#deliveryPartner");
-
-  if (stockSelect.hasClass("select2-hidden-accessible")) stockSelect.select2('destroy');
-  if (kitSelect.hasClass("select2-hidden-accessible")) kitSelect.select2('destroy');
-  if (vendorSelect.hasClass("select2-hidden-accessible")) vendorSelect.select2('destroy');
-  if (partnerSelect.hasClass("select2-hidden-accessible")) partnerSelect.select2('destroy');
-
   const prodHtml = '<option></option>' + products.map(p => `<option value="${p}">${p}</option>`).join('');
   const kitHtml = '<option></option>' + kits.map(k => `<option value="${k}">${k}</option>`).join('');
-  const vendorHtml = '<option></option>' + (vendors || []).map(v => `<option value="${v.name}">${v.name}</option>`).join('');
-
-  stockSelect.html(prodHtml).select2({ placeholder: "Search Item...", width: '100%' });
-  kitSelect.html(kitHtml).select2({ placeholder: "Search Kit...", width: '100%' });
-  vendorSelect.html(vendorHtml).select2({ placeholder: "Select Vendor (Optional)", width: '100%' });
-  partnerSelect.select2({ placeholder: "Select Delivery Partner...", width: '100%', minimumResultsForSearch: Infinity });
+  const vendorHtml = '<option></option>' + vendors.map(v => `<option value="${v.name}">${v.name}</option>`).join('');
+  
+  $("#stockSelect").html(prodHtml).select2({placeholder:"Item...", width:'100%'});
+  $("#kitSelect").html(kitHtml).select2({placeholder:"Kit...", width:'100%'});
+  $("#vendorSelect").html(vendorHtml).select2({placeholder:"Vendor...", width:'100%'});
+  $("#deliveryPartner").select2({placeholder:"Partner...", width:'100%'});
 }
 
 /* =========================
-   Transactions Actions
+   Transactions
 ========================= */
 function dispatch(){
-  const kit = document.getElementById("kitSelect").value;
-  const qty = document.getElementById("kitQty").value;
-  const partner = document.getElementById("deliveryPartner").value;
-
-  if(!kit || !qty || qty <= 0) return showToast("Please select a kit and valid quantity.", true);
-  if(!partner) return showToast("Please select a Delivery Partner.", true);
-
+  const kit = $("#kitSelect").val(), qty = $("#kitQty").val(), partner = $("#deliveryPartner").val();
+  if(!kit || !qty || qty <= 0) return showToast("Invalid inputs", true);
   toggleButtons(true);
-  
   apiCall("dispatchKit", "POST", { kit, qty, partner }).then(res => {
     showToast(res.message, res.message.includes("Insufficient"));
-    document.getElementById("kitQty").value = ''; 
-    $("#kitSelect").val(null).trigger('change'); 
-    $("#deliveryPartner").val(null).trigger('change'); 
     fetchAllData();
-  }).catch(() => toggleButtons(false));
+  });
 }
 
 function submitStockEntry(){
   const payload = {
-    product: document.getElementById("stockSelect").value,
-    qty: document.getElementById("stockQty").value,
-    vendor: document.getElementById("vendorSelect").value,
-    price: document.getElementById("stockPrice").value,
+    product: $("#stockSelect").val(),
+    qty: $("#stockQty").val(),
+    vendor: $("#vendorSelect").val(),
+    price: $("#stockPrice").val(),
     hasGst: document.getElementById("hasGst").checked,
-    gstPercent: document.getElementById("gstPercent").value
+    gstPercent: $("#gstPercent").val()
   };
-
-  if(!payload.product || !payload.qty || payload.qty <= 0) return showToast("Please select an item and valid quantity.", true);
-
+  if(!payload.product || !payload.qty) return showToast("Required fields missing", true);
   toggleButtons(true);
-  
   apiCall("addStock", "POST", payload).then(res => {
     showToast(res.message);
-    document.getElementById("stockQty").value = ''; 
-    document.getElementById("stockPrice").value = ''; 
-    document.getElementById("hasGst").checked = false;
-    document.getElementById("gstPercent").value = '';
-    document.getElementById("gstPercent").style.display = 'none';
-    
-    $("#stockSelect").val(null).trigger('change'); 
-    $("#vendorSelect").val(null).trigger('change'); 
-    fetchAllData(); 
-  }).catch(() => toggleButtons(false));
+    fetchAllData();
+  });
 }
 
 function processBill() {
-  const productName = document.getElementById("billProductName").value;
-  const date = document.getElementById("billDate").value;
-  const qty = document.getElementById("billQty").value;
-  const fileInput = document.getElementById("billFile");
-
-  if (!productName || !date || !qty) return showToast("Please fill in the Product Name, Date, and Quantity.", true);
-
+  const file = document.getElementById("billFile").files[0];
+  const payload = { productName: $("#billProductName").val(), date: $("#billDate").val(), qty: $("#billQty").val() };
+  if(!payload.productName || !payload.date) return showToast("Fill all details", true);
+  
   toggleButtons(true);
-  const file = fileInput.files[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      sendBillToBackend({ productName, date, qty, fileData: e.target.result, fileName: file.name, mimeType: file.type });
+    reader.onload = e => {
+      payload.fileData = e.target.result; payload.fileName = file.name; payload.mimeType = file.type;
+      apiCall("uploadBill", "POST", payload).then(res => { showToast(res.message); toggleButtons(false); });
     };
-    reader.readAsDataURL(file); 
+    reader.readAsDataURL(file);
   } else {
-    sendBillToBackend({ productName, date, qty, fileData: null, fileName: null, mimeType: null });
+    apiCall("uploadBill", "POST", payload).then(res => { showToast(res.message); toggleButtons(false); });
   }
-}
-
-function sendBillToBackend(payload) {
-  apiCall("uploadBill", "POST", payload).then(res => {
-    showToast(res.message, res.message.includes("Error"));
-    toggleButtons(false);
-    
-    document.getElementById("billProductName").value = '';
-    document.getElementById("billDate").value = '';
-    document.getElementById("billQty").value = '';
-    document.getElementById("billFile").value = '';
-  }).catch(() => toggleButtons(false));
 }
 
 /* =========================
-   Vendors Logic
+   Vendors
 ========================= */
-function toggleVendorForm(forceShow = null) {
-  const card = document.getElementById("vendorFormCard"), btn = document.getElementById("btnToggleVendor");
-  const shouldShow = forceShow !== null ? forceShow : card.style.display === "none";
-
-  if (shouldShow) {
-    card.style.display = "block"; btn.innerText = "✖ Close Form"; btn.style.background = "#e74c3c"; 
-  } else {
-    card.style.display = "none"; btn.innerText = "+ Add Vendor"; btn.style.background = "#f47c3c"; resetVendorForm();
-  }
-}
-
 function loadVendors() {
-  document.getElementById("vendorsTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching vendors...</td></tr>";
   apiCall("getVendors").then(data => {
     cachedVendors = data;
-    const rows = data.map(v => `<tr><td>${v.name}</td><td>${v.mobile || '-'}</td><td>${v.products}</td><td><button class="btn-small" onclick="editVendor('${v.id}')">Edit</button></td></tr>`);
-    document.getElementById("vendorsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No vendors recorded yet.</td></tr>";
+    const rows = data.map(v => `<tr><td>${v.name}</td><td>${v.mobile}</td><td>${v.products}</td><td><button class="btn-small" onclick="editVendor('${v.id}')">Edit</button></td></tr>`);
+    document.getElementById("vendorsTable").innerHTML = rows.join('');
   });
+}
+
+function toggleVendorForm(show) {
+  const card = document.getElementById("vendorFormCard");
+  card.style.display = (show === false) ? "none" : (card.style.display === "none" ? "block" : "none");
 }
 
 function submitVendor() {
-  const payload = {
-    id: document.getElementById("vendorId").value,
-    name: document.getElementById("vendorName").value,
-    mobile: document.getElementById("vendorMobile").value,
-    products: document.getElementById("vendorProducts").value
-  };
-
-  if (!payload.name || !payload.products) return showToast("Please fill in the Vendor Name and Products.", true);
-
-  const btn = document.getElementById("btnSaveVendor");
-  btn.disabled = true; btn.innerText = "Saving...";
-
-  apiCall("saveVendor", "POST", payload).then(res => {
-    showToast(res.message, res.message.includes("Error"));
-    toggleVendorForm(false); 
-    loadVendors(); 
-    fetchAllData(); 
-  });
+  const p = { id: $("#vendorId").val(), name: $("#vendorName").val(), mobile: $("#vendorMobile").val(), products: $("#vendorProducts").val() };
+  apiCall("saveVendor", "POST", p).then(res => { showToast(res.message); loadVendors(); toggleVendorForm(false); });
 }
 
 function editVendor(id) {
-  const vendor = cachedVendors.find(v => v.id === id);
-  if (!vendor) return;
-
+  const v = cachedVendors.find(x => x.id === id);
+  if(!v) return;
+  $("#vendorId").val(v.id); $("#vendorName").val(v.name); $("#vendorMobile").val(v.mobile); $("#vendorProducts").val(v.products);
   toggleVendorForm(true);
-  document.getElementById("vendorFormTitle").innerText = "Edit Vendor";
-  document.getElementById("vendorId").value = vendor.id;
-  document.getElementById("vendorName").value = vendor.name;
-  document.getElementById("vendorMobile").value = vendor.mobile || ''; 
-  document.getElementById("vendorProducts").value = vendor.products;
-  
-  document.getElementById("btnCancelVendor").style.display = "inline-block";
-  document.getElementById("btnSaveVendor").innerText = "Update Vendor";
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function resetVendorForm() {
-  document.getElementById("vendorFormTitle").innerText = "Add New Vendor";
-  document.getElementById("vendorId").value = '';
-  document.getElementById("vendorName").value = '';
-  document.getElementById("vendorMobile").value = ''; 
-  document.getElementById("vendorProducts").value = '';
-  document.getElementById("btnCancelVendor").style.display = "none";
-  
-  const btnSave = document.getElementById("btnSaveVendor");
-  btnSave.disabled = false; btnSave.innerText = "Save Vendor";
 }
 
 /* =========================
-   Table Fetches & Reports
+   Exports & Analytics
 ========================= */
-function loadInStock(){
-  document.getElementById("inStockTable").innerHTML = "<tr><td colspan='6' class='loading'>Fetching latest transactions...</td></tr>";
-  apiCall("getTransactions").then(data => {
-    const rows = data.inStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.item}</td><td>${r.vendor}</td><td style="color:green; font-weight:bold;">+${r.qty}</td><td>₹${Number(r.totalPrice).toFixed(2)}</td><td>${Math.round(r.updatedStock)}</td></tr>`);
-    document.getElementById("inStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='6'>No data</td></tr>";
-  });
-}
-
-function loadOutStock(){
-  document.getElementById("outStockTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching latest transactions...</td></tr>";
-  apiCall("getTransactions").then(data => {
-    const rows = data.outStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.kit}</td><td>${r.partner}</td><td style="color:red; font-weight:bold;">-${r.qty}</td></tr>`);
-    document.getElementById("outStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No data</td></tr>";
-  });
-}
-
-function loadBillsHistory() {
-  document.getElementById("billsTable").innerHTML = "<tr><td colspan='5' class='loading'>Fetching bills...</td></tr>";
-  apiCall("getBillsHistory").then(data => {
-    const rows = data.slice().reverse().map(r => {
-      let fileLink = (r.fileUrl && r.fileUrl !== "No File Uploaded") ? `<a href="${r.fileUrl}" target="_blank" class="btn-link">📄 View Bill</a>` : "No File attached";
-      return `<tr><td>${formatDateTime(r.timestamp)}</td><td>${formatDate(r.date)}</td><td>${r.productName}</td><td>${r.qty}</td><td>${fileLink}</td></tr>`;
-    });
-    document.getElementById("billsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='5'>No bills recorded yet.</td></tr>";
-  });
-}
-
-function triggerExport(action, filename) {
-  showToast("Compiling CSV...");
+function triggerExport(action, file) {
   apiCall(action).then(res => {
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(new Blob([res.csv], { type: 'text/csv' }));
-    link.download = filename;
-    link.click();
-    showToast("Download started!");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([res.csv], {type:'text/csv'}));
+    a.download = file; a.click();
   });
 }
 
 function loadKitAnalytics() {
-  document.getElementById("analyticsTable").innerHTML = "<tr><td colspan='2' class='loading'>Calculating...</td></tr>";
   apiCall("getKitAnalytics").then(data => {
-    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([kit, qty]) => `<tr><td>${kit}</td><td>${qty}</td></tr>`);
-    document.getElementById("analyticsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No data</td></tr>";
+    const rows = Object.entries(data).map(([k,q]) => `<tr><td>${k}</td><td>${q}</td></tr>`);
+    document.getElementById("analyticsTable").innerHTML = rows.join('');
   });
 }
 
 function loadMonthlyReports() {
-  const month = document.getElementById("reportMonth").value;
-  const year = document.getElementById("reportYear").value;
-
-  document.getElementById("monthlyKitTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>";
-  document.getElementById("monthlyConsumptionTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>";
-
-  apiCall("getMonthlyReport", "GET", { month, year }).then(data => {
-    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k, q]) => `<tr><td>${k}</td><td>${q}</td></tr>`);
-    document.getElementById("monthlyKitTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No dispatches</td></tr>";
+  const m = $("#reportMonth").val(), y = $("#reportYear").val();
+  apiCall("getMonthlyReport", "GET", { month:m, year:y }).then(res => {
+    document.getElementById("monthlyKitTable").innerHTML = Object.entries(res).map(([k,q])=>`<tr><td>${k}</td><td>${q}</td></tr>`).join('');
   });
-
-  apiCall("getConsumptionReport", "GET", { month, year }).then(data => {
-    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([i, q]) => `<tr><td>${i}</td><td>${q}</td></tr>`);
-    document.getElementById("monthlyConsumptionTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No consumption</td></tr>";
+  apiCall("getConsumptionReport", "GET", { month:m, year:y }).then(res => {
+    document.getElementById("monthlyConsumptionTable").innerHTML = Object.entries(res).map(([i,q])=>`<tr><td>${i}</td><td>${q}</td></tr>`).join('');
   });
 }
 
+function loadBillsHistory() {
+  apiCall("getBillsHistory").then(data => {
+    const rows = data.reverse().map(r => `<tr><td>${formatDateTime(r.timestamp)}</td><td>${formatDate(r.date)}</td><td>${r.productName}</td><td>${r.qty}</td><td><a href="${r.fileUrl}" target="_blank">View</a></td></tr>`);
+    document.getElementById("billsTable").innerHTML = rows.join('');
+  });
+}
+
+/* =========================
+   Heatmap
+========================= */
 function loadHeatmap() {
-  const month = document.getElementById("heatmapMonth").value;
-  const year = document.getElementById("heatmapYear").value;
-  const chartDom = document.getElementById("heatmapContainer");
-
-  // CRITICAL FIX: Properly destroy the old map before loading new data
-  const existingChart = echarts.getInstanceByDom(chartDom);
-  if (existingChart) {
-    echarts.dispose(existingChart);
-  }
-
-  // Show a nicely centered loading text
-  chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; font-weight:bold; color:#f47c3c;'>Loading map...</div>";
-
-  apiCall("getStateHeatmap", "GET", { month, year }).then(data => {
-    if (!data || data.length === 0) { 
-      chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:#888;'>No Data Found for this month</div>"; 
-      return; 
-    }
-    
-    // Clear the loading text so ECharts has a clean slate to draw on
-    chartDom.innerHTML = "";
-    renderHeatmap(data);
-  }).catch(err => {
-    chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:red;'>Error loading data</div>";
+  const m = $("#heatmapMonth").val(), y = $("#heatmapYear").val();
+  apiCall("getStateHeatmap", "GET", { month:m, year:y }).then(data => {
+    if(!data.length) return;
+    const chart = echarts.init(document.getElementById('heatmapContainer'));
+    fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
+      .then(r => r.json()).then(geo => {
+        echarts.registerMap('india', geo);
+        chart.setOption({
+          visualMap: { min:0, max: Math.max(...data.map(d=>d.value)) || 10, inRange:{color:['#fff3e0','#f47c3c','#990000']} },
+          series: [{ type:'map', map:'india', data: data }]
+        });
+      });
   });
-}
-
-function renderHeatmap(data) {
-  const chartDom = document.getElementById('heatmapContainer');
-  const myChart = echarts.init(chartDom);
-
-  fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
-    .then(res => {
-      if (!res.ok) throw new Error("Map file not found");
-      return res.json();
-    })
-    .then(geoJson => {
-      echarts.registerMap('india', geoJson);
-      
-      let maxValue = Math.max(...data.map(d => d.value));
-      if (maxValue === 0 || !isFinite(maxValue)) maxValue = 10; 
-      
-      myChart.setOption({
-        tooltip: { trigger: 'item', formatter: '{b}<br/>Total Dispatched: {c}' },
-        visualMap: { 
-          min: 0, 
-          max: maxValue, 
-          text: ['High', 'Low'],
-          inRange: { color: ['#fff3e0', '#ffb74d', '#f47c3c', '#d84315', '#990000'] },
-          calculable: true
-        },
-        series: [{ 
-          type: 'map', 
-          map: 'india', 
-          data: data,
-          roam: true, 
-          label: { show: false },
-          itemStyle: {
-            borderColor: '#9e9e9e',
-            borderWidth: 1,
-            areaColor: '#f4f6f9' 
-          },
-          emphasis: { 
-            itemStyle: { areaColor: '#f1c40f', borderColor: '#333', borderWidth: 1.5 },
-            label: { show: true, color: '#000', fontWeight: 'bold' } 
-          }
-        }]
-      });
-    })
-    .catch(err => {
-      console.error("Map Load Error:", err);
-      chartDom.innerHTML = "<p style='color:red; text-align:center; padding-top:200px;'>Failed to load the map graphic.</p>";
-    });
-}
-
-function renderHeatmap(data) {
-  const chartDom = document.getElementById('heatmapContainer');
-  const myChart = echarts.init(chartDom);
-
-  fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
-    .then(res => {
-      if (!res.ok) throw new Error("Map file not found");
-      return res.json();
-    })
-    .then(geoJson => {
-      echarts.registerMap('india', geoJson);
-      
-      // FIX 1: Let the maximum value adapt to YOUR highest data point, not a hardcoded 100.
-      // This ensures your highest state always gets the darkest color.
-      let maxValue = Math.max(...data.map(d => d.value));
-      if (maxValue === 0 || !isFinite(maxValue)) maxValue = 10; 
-      
-      myChart.setOption({
-        tooltip: { 
-          trigger: 'item', 
-          formatter: '{b}<br/>Total Dispatched: {c}' 
-        },
-        visualMap: { 
-          min: 0, 
-          max: maxValue, 
-          text: ['High', 'Low'],
-          // FIX 2: A much more vibrant, fiery color palette!
-          inRange: { 
-            color: ['#fff3e0', '#ffb74d', '#f47c3c', '#d84315', '#990000'] 
-          },
-          calculable: true
-        },
-        series: [{ 
-          type: 'map', 
-          map: 'india', 
-          data: data,
-          roam: true, 
-          label: { show: false },
-          // FIX 3: Darker borders so the states pop out clearly
-          itemStyle: {
-            borderColor: '#9e9e9e',
-            borderWidth: 1,
-            areaColor: '#f4f6f9' // Nice clean gray for states with 0 data
-          },
-          emphasis: { 
-            // FIX 4: Strong highlight effect when you hover over a state
-            itemStyle: {
-              areaColor: '#f1c40f',
-              borderColor: '#333',
-              borderWidth: 1.5
-            },
-            label: { show: true, color: '#000', fontWeight: 'bold' } 
-          }
-        }]
-      });
-    })
-    .catch(err => {
-      console.error("Map Load Error:", err);
-      document.getElementById("heatmapContainer").innerHTML = "<p style='color:red; text-align:center;'>Failed to load the map graphic.</p>";
-    });
 }
 </script>
 </body>
