@@ -1,3 +1,18 @@
+Here is the updated code. To make the interface feel like a modern, premium SaaS (Software as a Service) application, I completely revamped the CSS while leaving your HTML structure and JavaScript untouched.
+
+### Key Visual Upgrades:
+
+* **Typography:** Introduced the **Inter** font (standard for modern web apps) for a cleaner, highly legible look.
+* **Unified Light Theme:** Swapped the heavy dark sidebar for a crisp, white sidebar with soft slate-gray text and pill-shaped active states.
+* **Depth & Shadows:** Replaced flat, harsh shadows with soft, diffused shadows and subtle borders (`#e2e8f0`) to give the cards a floating, tactile feel.
+* **Form & Button Interactions:** Added focus rings to inputs and dropdowns, and a slight "lift" animation (`transform: translateY(-1px)`) to buttons when hovered.
+* **Data Tables:** Styled table headers to be uppercase, smaller, and wider-spaced, which makes reading dense inventory data much easier on the eyes.
+
+### The Updated Code
+
+Replace your entire file with the following:
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,61 +20,410 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Inventory ERP</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  body { margin:0; font-family:Arial, sans-serif; background:#f4f6f9; color: #333; overflow-x: hidden; }
-  .sidebar { position:fixed; width:200px; height:100vh; background:#1e1e2f; color:white; padding:20px; box-sizing: border-box; z-index: 100; box-shadow: 2px 0 15px rgba(0,0,0,0.2); }
-  .sidebar h2 { margin-top:0; border-bottom: 1px solid #333; padding-bottom: 15px; }
-  .sidebar a { display:block; color:#ccc; text-decoration:none; padding:12px 0; cursor:pointer; font-weight: 500; transition: color 0.2s;}
-  .sidebar a:hover, .sidebar a.active { color:#f47c3c; }
-  .main { margin-left:200px; padding:30px; width: calc(100% - 200px); box-sizing: border-box; }
-  .flex { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:30px; align-items: stretch; }
-  .flex .card { display: flex; flex-direction: column; background:white; padding:25px; border-radius:12px; margin-bottom:0; box-shadow:0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }
-  .flex .card h2 { margin-top: 0; margin-bottom: 20px; }
-  .flex .card button { margin-top: auto; } 
-  .gauge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: stretch; }
-  .card-standard { background:white; padding:25px; border-radius:12px; margin-bottom:25px; box-shadow:0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }
-  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .page-header h1 { margin: 0; }
-  .gauge { text-align:center; padding: 20px; background: #fafbfc; border-radius: 8px; border: 1px solid #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .gauge h3 { min-height:48px; font-size:16px; margin:0 0 15px 0; color: #555; width: 100%; text-align: center; }
-  input[type="text"], input[type="number"], input[type="date"], select, textarea { height: 46px; padding: 10px 14px; margin: 0 0 15px 0; width: 100%; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: Arial, sans-serif; font-size: 14px; }
-  textarea { height: auto; } 
-  input[type="file"] { height: auto; padding: 0; margin-bottom: 15px; border: none; }
-  .select2-container { width: 100% !important; margin: 0 0 15px 0 !important; }
-  .select2-container .select2-selection--single { height: 46px !important; border: 1px solid #ccc !important; border-radius: 6px !important; display: flex !important; align-items: center !important; }
-  .select2-container--default .select2-selection--single .select2-selection__rendered { padding-left: 14px !important; font-size: 14px; color: #444 !important; }
-  .select2-container--default .select2-selection--single .select2-selection__arrow { height: 46px !important; right: 8px !important; }
-  .select2-dropdown { z-index: 99999 !important; }
-  button { padding:14px 22px; background:#f47c3c; border:none; border-radius:6px; color:white; font-size: 15px; font-weight:bold; cursor:pointer; transition: background 0.2s; width: 100%;}
-  button:hover { background:#e0642b; }
-  button:disabled { background: #ccc; cursor: not-allowed; opacity: 0.7; }
-  table { width:100%; border-collapse:collapse; margin-top: 10px; min-width: 600px; }
-  th, td { padding:14px; border-bottom:1px solid #eee; text-align:left; }
-  th { background:#f9fafb; font-weight: 600; color: #666; }
-  tr:hover { background: #fdfdfd; }
-  .toast { position:fixed; top:20px; right:20px; background:#4CAF50; color:white; padding:15px 25px; border-radius:8px; box-shadow:0 6px 15px rgba(0,0,0,0.2); font-weight:bold; display:none; z-index:999999; animation: slideIn 0.3s; }
-  .toast.error { background:#e74c3c; }
-  @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-  .loading { color: #888; font-style: italic; }
-  .status-low { color: #e74c3c; font-weight: bold; background: #fceceb; padding: 4px 8px; border-radius: 4px; }
-  .btn-link { color: #f47c3c; font-weight: bold; text-decoration: none; }
+  /* * MODERN LIGHT THEME CSS 
+   * Palette based on Slate & Orange (Tailwind colors)
+   */
+  :root {
+    --bg-main: #f8fafc;
+    --bg-surface: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --accent-main: #f97316; /* Orange-500 */
+    --accent-hover: #ea580c; /* Orange-600 */
+    --accent-light: #ffedd5; /* Orange-100 */
+    --danger: #ef4444;
+    --danger-light: #fee2e2;
+    --success: #22c55e;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  body { 
+    margin: 0; 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+    background: var(--bg-main); 
+    color: var(--text-primary); 
+    overflow-x: hidden; 
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* SIDEBAR */
+  .sidebar { 
+    position: fixed; 
+    width: 240px; 
+    height: 100vh; 
+    background: var(--bg-surface); 
+    color: var(--text-secondary); 
+    padding: 24px 16px; 
+    box-sizing: border-box; 
+    z-index: 100; 
+    border-right: 1px solid var(--border-color);
+  }
+  .sidebar h2 { 
+    margin-top: 0; 
+    padding-bottom: 20px; 
+    padding-left: 12px;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  .sidebar a { 
+    display: block; 
+    color: var(--text-secondary); 
+    text-decoration: none; 
+    padding: 10px 14px; 
+    margin-bottom: 4px;
+    border-radius: var(--radius-md);
+    cursor: pointer; 
+    font-weight: 500; 
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+  .sidebar a:hover { 
+    background: var(--bg-main); 
+    color: var(--text-primary); 
+  }
+  .sidebar a.active { 
+    background: var(--accent-light); 
+    color: var(--accent-hover); 
+    font-weight: 600;
+  }
+
+  /* MAIN LAYOUT */
+  .main { 
+    margin-left: 240px; 
+    padding: 32px 40px; 
+    width: calc(100% - 240px); 
+    box-sizing: border-box; 
+  }
+  .page-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 24px; 
+  }
+  h1 { 
+    margin: 0 0 24px 0; 
+    font-size: 1.75rem; 
+    font-weight: 700; 
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+  }
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  /* GRIDS & CARDS */
+  .flex { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+    gap: 24px; 
+    align-items: stretch; 
+  }
+  .card, .card-standard { 
+    background: var(--bg-surface); 
+    padding: 24px; 
+    border-radius: var(--radius-lg); 
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm); 
+    overflow-x: auto; 
+    transition: box-shadow 0.2s ease;
+  }
+  .card:hover, .card-standard:hover {
+    box-shadow: var(--shadow-md);
+  }
+  .card { 
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 0; 
+  }
+  .card-standard {
+    margin-bottom: 24px;
+  }
+  .card button { margin-top: auto; } 
+  .gauge-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 24px; 
+    align-items: stretch; 
+  }
+  .gauge { 
+    text-align: center; 
+    padding: 24px; 
+    background: var(--bg-main); 
+    border-radius: var(--radius-md); 
+    border: 1px solid var(--border-color); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+  }
+  .gauge h3 { min-height: 40px; margin: 0 0 10px 0; width: 100%; text-align: center; }
+
+  /* FORMS & INPUTS */
+  input[type="text"], input[type="number"], input[type="date"], select, textarea { 
+    height: 44px; 
+    padding: 10px 14px; 
+    margin: 0 0 16px 0; 
+    width: 100%; 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius-md); 
+    box-sizing: border-box; 
+    font-family: inherit; 
+    font-size: 0.95rem; 
+    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    transition: all 0.2s ease;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-main);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+  }
+  textarea { height: auto; min-height: 80px; } 
+  input[type="file"] { 
+    height: auto; 
+    padding: 10px 0; 
+    margin-bottom: 16px; 
+    border: none; 
+    font-size: 0.9rem;
+  }
+  
+  /* SELECT2 OVERRIDES FOR LIGHT THEME */
+  .select2-container { width: 100% !important; margin: 0 0 16px 0 !important; }
+  .select2-container .select2-selection--single { 
+    height: 44px !important; 
+    border: 1px solid var(--border-color) !important; 
+    border-radius: var(--radius-md) !important; 
+    display: flex !important; 
+    align-items: center !important; 
+    background-color: var(--bg-surface) !important;
+  }
+  .select2-container--open .select2-selection--single {
+    border-color: var(--accent-main) !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__rendered { 
+    padding-left: 14px !important; 
+    font-size: 0.95rem; 
+    color: var(--text-primary) !important; 
+  }
+  .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: var(--text-muted) !important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__arrow { 
+    height: 44px !important; 
+    right: 8px !important; 
+  }
+  .select2-dropdown { 
+    z-index: 99999 !important; 
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-md) !important;
+  }
+  .select2-results__option { font-size: 0.95rem; }
+  .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--accent-main) !important;
+  }
+
+  /* BUTTONS */
+  button { 
+    padding: 12px 20px; 
+    background: var(--accent-main); 
+    border: none; 
+    border-radius: var(--radius-md); 
+    color: white; 
+    font-size: 0.95rem; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    width: 100%;
+    box-shadow: var(--shadow-sm);
+  }
+  button:hover:not(:disabled) { 
+    background: var(--accent-hover); 
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  button:disabled { 
+    background: #cbd5e1; 
+    cursor: not-allowed; 
+    box-shadow: none;
+  }
+  
+  .btn-small { 
+    padding: 8px 14px; 
+    font-size: 0.85rem; 
+    background: var(--bg-main); 
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+    width: auto; 
+  }
+  .btn-small:hover:not(:disabled) { 
+    background: var(--border-color); 
+    box-shadow: none;
+  }
+  .btn-cancel { 
+    background: var(--bg-main); 
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    display: none; 
+    width: auto; 
+    box-shadow: none;
+  }
+  .btn-cancel:hover:not(:disabled) { 
+    background: var(--border-color); 
+  }
+
+  .btn-link { 
+    color: var(--accent-main); 
+    font-weight: 600; 
+    text-decoration: none; 
+  }
   .btn-link:hover { text-decoration: underline; }
-  .btn-small { padding: 6px 12px; font-size: 13px; background: #2c3e50; border-radius: 4px; width: auto; }
-  .btn-small:hover { background: #1e2b38; }
-  .btn-cancel { background: #888; display: none; width: auto; }
-  .btn-cancel:hover { background: #666; }
-  .checkbox-group { margin: 0 0 15px 0; font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 600; color: #444; height: 46px; }
-  .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; margin: 0; cursor: pointer; }
-  .checkbox-group input[type="number"] { width: 100px; margin: 0; margin-left: auto; }
+
+  /* TABLES */
+  table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 8px; 
+    min-width: 600px; 
+  }
+  th, td { 
+    padding: 14px 16px; 
+    border-bottom: 1px solid var(--border-color); 
+    text-align: left; 
+    font-size: 0.95rem;
+  }
+  th { 
+    background: var(--bg-main); 
+    font-weight: 600; 
+    color: var(--text-secondary); 
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+  tr:hover td { background: var(--bg-main); }
+  tr:last-child td { border-bottom: none; }
+
+  /* UTILITIES & ALERTS */
+  .toast { 
+    position: fixed; 
+    top: 24px; 
+    right: 24px; 
+    background: var(--success); 
+    color: white; 
+    padding: 16px 24px; 
+    border-radius: var(--radius-md); 
+    box-shadow: var(--shadow-md); 
+    font-weight: 600; 
+    display: none; 
+    z-index: 999999; 
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+  }
+  .toast.error { background: var(--danger); }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  
+  .loading { color: var(--text-muted); font-style: italic; }
+  .status-low { 
+    color: var(--danger); 
+    font-weight: 700; 
+    background: var(--danger-light); 
+    padding: 4px 10px; 
+    border-radius: 9999px; /* Pill shape */
+    font-size: 0.75rem;
+  }
+
+  .checkbox-group { 
+    margin: 0 0 16px 0; 
+    font-size: 0.95rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    font-weight: 500; 
+    color: var(--text-secondary); 
+    height: 44px; 
+  }
+  .checkbox-group input[type="checkbox"] { 
+    width: 18px; 
+    height: 18px; 
+    margin: 0; 
+    cursor: pointer; 
+    accent-color: var(--accent-main);
+  }
+  .checkbox-group input[type="number"] { 
+    width: 100px; 
+    margin: 0; 
+    margin-left: auto; 
+  }
+
+  /* RESPONSIVE DESIGN */
   @media (max-width: 768px) {
-    .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: 60px; display: flex; flex-direction: row; overflow-x: auto; white-space: nowrap; padding: 10px; align-items: center; gap: 15px; }
+    .sidebar { 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; 
+      height: 64px; 
+      display: flex; 
+      flex-direction: row; 
+      overflow-x: auto; 
+      white-space: nowrap; 
+      padding: 0 16px; 
+      align-items: center; 
+      gap: 12px; 
+      border-right: none;
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
     .sidebar h2 { display: none; }
-    .sidebar a { display: inline-block; padding: 8px 15px; margin: 0; border-radius: 20px; background: #2c3e50; color: #fff; }
-    .sidebar a.active { background: #f47c3c; }
-    .main { margin-left: 0; margin-top: 60px; width: 100%; padding: 15px; }
+    .sidebar a { 
+      display: inline-block; 
+      padding: 8px 16px; 
+      margin: 0; 
+      border-radius: 9999px; 
+      background: var(--bg-main); 
+      color: var(--text-secondary); 
+      border: 1px solid var(--border-color);
+    }
+    .sidebar a.active { 
+      background: var(--accent-main); 
+      color: white; 
+      border-color: var(--accent-main);
+    }
+    .main { 
+      margin-left: 0; 
+      margin-top: 64px; 
+      width: 100%; 
+      padding: 20px 16px; 
+    }
     .flex { grid-template-columns: 1fr; }
-    .gauge-grid { grid-template-columns: 1fr; }
-    .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
     .gauge svg { width: 100%; max-width: 220px; }
   }
 </style>
@@ -93,8 +457,8 @@
     
     <div class="card-standard">
       <h2>Kit Dispatches Comparison</h2>
-      <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-        <select id="dashChartMonth" style="width:150px;">
+      <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
+        <select id="dashChartMonth" style="width:160px; margin:0;">
           <option value="0">All Months</option>
           <option value="1">January</option>
           <option value="2">February</option>
@@ -109,8 +473,8 @@
           <option value="11">November</option>
           <option value="12">December</option>
         </select>
-        <input type="number" id="dashChartYear" style="width:120px;">
-        <button onclick="loadDashboardChart()" style="width:auto;">Update Chart</button>
+        <input type="number" id="dashChartYear" style="width:120px; margin:0;">
+        <button onclick="loadDashboardChart()" style="width:auto; margin:0;">Update Chart</button>
       </div>
       <div id="kitBarChart" style="height:400px; width:100%;"></div>
     </div>
@@ -150,7 +514,7 @@
         <input type="text" id="billProductName" placeholder="Product Name">
         <input type="date" id="billDate">
         <input type="number" id="billQty" placeholder="Quantity">
-        <label style="display:block; margin: 0 0 10px; font-size:13px; font-weight:bold; color:#555;">File (Image or PDF):</label>
+        <label style="display:block; margin: 0 0 8px; font-size:13px; font-weight:600; color:var(--text-secondary);">File (Image or PDF):</label>
         <input type="file" id="billFile" accept="image/*,.pdf">
         <button id="btnSubmitBill" onclick="processBill()">Save Bill</button>
       </div>
@@ -227,7 +591,7 @@
       <input type="text" id="vendorMobile" placeholder="Mobile Number" style="max-width: 400px;">
       <textarea id="vendorProducts" placeholder="Products they supply" rows="3" style="max-width: 400px; resize: vertical;"></textarea>
       
-      <div style="display: flex; gap: 10px;">
+      <div style="display: flex; gap: 12px;">
         <button id="btnSaveVendor" onclick="submitVendor()" style="width:auto;">Save Vendor</button>
         <button id="btnCancelVendor" class="btn-cancel" onclick="toggleVendorForm(false)">Cancel</button>
       </div>
@@ -245,8 +609,8 @@
   <div id="heatmap" class="page" style="display:none">
     <h1>State Heatmap</h1>
     <div class="card-standard">
-      <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-      <select id="heatmapMonth" style="width:150px;">
+      <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
+      <select id="heatmapMonth" style="width:160px; margin:0;">
         <option value="0">All Months</option>
         <option value="1">January</option>
         <option value="2">February</option>
@@ -261,8 +625,8 @@
         <option value="11">November</option>
         <option value="12">December</option>
       </select>
-        <input type="number" id="heatmapYear" value="2026" style="width:120px;">
-        <button onclick="loadHeatmap()" style="width:auto;">Generate Heatmap</button>
+        <input type="number" id="heatmapYear" value="2026" style="width:120px; margin:0;">
+        <button onclick="loadHeatmap()" style="width:auto; margin:0;">Generate Heatmap</button>
       </div>
       <div id="heatmapContainer" style="height:500px;"></div>
     </div>
@@ -272,16 +636,16 @@
     <h1>Reports & Analytics</h1>
     <div class="card-standard">
       <h2>Data Exports</h2>
-      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-        <button onclick="triggerExport('exportStockCSV', 'Stock_Summary.csv')" style="width:auto;">📥 Export Stock</button>
-        <button onclick="triggerExport('exportInCSV', 'Inbound_History.csv')" style="width:auto;">📥 Export Inbound</button>
-        <button onclick="triggerExport('exportOutCSV', 'Dispatch_History.csv')" style="width:auto;">📥 Export Dispatches</button>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <button onclick="triggerExport('exportStockCSV', 'Stock_Summary.csv')" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">📥 Export Stock</button>
+        <button onclick="triggerExport('exportInCSV', 'Inbound_History.csv')" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">📥 Export Inbound</button>
+        <button onclick="triggerExport('exportOutCSV', 'Dispatch_History.csv')" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">📥 Export Dispatches</button>
       </div>
     </div>
 
     <div class="card-standard">
       <h2>All-Time Kit Popularity</h2>
-      <button onclick="loadKitAnalytics()" style="width:auto; margin-bottom:15px;">Load Analytics</button>
+      <button onclick="loadKitAnalytics()" style="width:auto; margin-bottom:20px;">Load Analytics</button>
       <table>
         <thead><tr><th>Kit Name</th><th>Total Lifetime Dispatches</th></tr></thead>
         <tbody id="analyticsTable"></tbody>
@@ -290,8 +654,8 @@
 
     <div class="card-standard">
       <h2>Monthly Review</h2>
-      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
-        <select id="reportMonth" style="width:150px; margin:0;">
+      <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap;">
+        <select id="reportMonth" style="width:160px; margin:0;">
           <option value="1">January</option><option value="2">February</option>
           <option value="3">March</option><option value="4">April</option>
           <option value="5">May</option><option value="6">June</option>
@@ -469,9 +833,9 @@ function createGauge(title, value, max){
     <div class="gauge">
       <h3>${title}</h3>
       <svg width="220" height="110" viewBox="0 0 220 120">
-        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#e9ecef" stroke-width="20"/>
-        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#f47c3c" stroke-width="20" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
-        <text x="110" y="95" text-anchor="middle" font-size="36" font-weight="bold" fill="#2c3e50">${Math.round(value)}</text>
+        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#e2e8f0" stroke-width="20"/>
+        <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#f97316" stroke-width="20" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+        <text x="110" y="95" text-anchor="middle" font-size="36" font-weight="700" fill="#0f172a">${Math.round(value)}</text>
       </svg>
     </div>`;
 }
@@ -480,8 +844,8 @@ function renderStock(data){
   const html = data.map(r => `<tr>
     <td>${r.product}</td>
     <td>${Number(r.stock).toLocaleString()}</td>
-    <td style="color: #2c3e50; font-weight: bold;">${r.profCapacity}</td>
-    <td style="color: #2c3e50; font-weight: bold;">${r.basicCapacity}</td>
+    <td style="color: var(--text-primary); font-weight: 600;">${r.profCapacity}</td>
+    <td style="color: var(--text-primary); font-weight: 600;">${r.basicCapacity}</td>
   </tr>`).join('');
   document.getElementById("stockTable").innerHTML = html || "<tr><td colspan='4'>No products found</td></tr>";
 }
@@ -600,9 +964,9 @@ function toggleVendorForm(forceShow = null) {
   const shouldShow = forceShow !== null ? forceShow : card.style.display === "none";
 
   if (shouldShow) {
-    card.style.display = "block"; btn.innerText = "✖ Close Form"; btn.style.background = "#e74c3c"; 
+    card.style.display = "block"; btn.innerText = "✖ Close Form"; btn.style.background = "var(--danger)"; 
   } else {
-    card.style.display = "none"; btn.innerText = "+ Add Vendor"; btn.style.background = "#f47c3c"; resetVendorForm();
+    card.style.display = "none"; btn.innerText = "+ Add Vendor"; btn.style.background = "var(--accent-main)"; resetVendorForm();
   }
 }
 
@@ -670,7 +1034,7 @@ function resetVendorForm() {
 function loadInStock(){
   document.getElementById("inStockTable").innerHTML = "<tr><td colspan='6' class='loading'>Fetching latest transactions...</td></tr>";
   apiCall("getTransactions").then(data => {
-    const rows = data.inStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.item}</td><td>${r.vendor}</td><td style="color:green; font-weight:bold;">+${r.qty}</td><td>₹${Number(r.totalPrice).toFixed(2)}</td><td>${Math.round(r.updatedStock)}</td></tr>`);
+    const rows = data.inStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.item}</td><td>${r.vendor}</td><td style="color:var(--success); font-weight:600;">+${r.qty}</td><td>₹${Number(r.totalPrice).toFixed(2)}</td><td>${Math.round(r.updatedStock)}</td></tr>`);
     document.getElementById("inStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='6'>No data</td></tr>";
   });
 }
@@ -678,7 +1042,7 @@ function loadInStock(){
 function loadOutStock(){
   document.getElementById("outStockTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching latest transactions...</td></tr>";
   apiCall("getTransactions").then(data => {
-    const rows = data.outStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.kit}</td><td>${r.partner}</td><td style="color:red; font-weight:bold;">-${r.qty}</td></tr>`);
+    const rows = data.outStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.kit}</td><td>${r.partner}</td><td style="color:var(--danger); font-weight:600;">-${r.qty}</td></tr>`);
     document.getElementById("outStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No data</td></tr>";
   });
 }
@@ -743,7 +1107,7 @@ function loadDashboardChart() {
   if (myChart) { echarts.dispose(myChart); }
   
   myChart = echarts.init(chartDom);
-  myChart.showLoading({ text: 'Loading Chart Data...', color: '#f47c3c' });
+  myChart.showLoading({ text: 'Loading Chart Data...', color: '#f97316' });
 
   apiCall("getMonthlyReport", "GET", { month, year }).then(data => {
     myChart.hideLoading();
@@ -753,7 +1117,7 @@ function loadDashboardChart() {
 
     if (kits.length === 0) {
       myChart.dispose();
-      chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:#888; font-weight:bold;'>No Kit Dispatches Found For This Period.</div>";
+      chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:var(--text-muted); font-weight:600;'>No Kit Dispatches Found For This Period.</div>";
       return;
     }
 
@@ -763,26 +1127,32 @@ function loadDashboardChart() {
       xAxis: { 
         type: 'category', 
         data: kits, 
-        axisLabel: { interval: 0, rotate: 15 }
+        axisLabel: { interval: 0, rotate: 15, color: '#475569' },
+        axisLine: { lineStyle: { color: '#e2e8f0' } }
       },
-      yAxis: { type: 'value', name: 'Total Dispatched' },
+      yAxis: { 
+        type: 'value', 
+        name: 'Total Dispatched',
+        axisLabel: { color: '#475569' },
+        splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } }
+      },
       series: [{
         name: 'Kits Dispatched',
         type: 'bar',
         barWidth: '40%',
         data: quantities,
-        itemStyle: { color: '#f47c3c', borderRadius: [4, 4, 0, 0] }
+        itemStyle: { color: '#f97316', borderRadius: [4, 4, 0, 0] }
       }]
     };
     myChart.setOption(option);
   }).catch(err => {
     myChart.dispose();
-    chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:red;'>Error loading chart</div>";
+    chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:var(--danger);'>Error loading chart</div>";
   });
 }
 
 /* =========================
-   HEATMAP (Updated & Bug Free)
+   HEATMAP
 ========================= */
 function loadHeatmap() {
   const month = Number(document.getElementById("heatmapMonth").value);
@@ -795,14 +1165,14 @@ function loadHeatmap() {
   }
 
   myChart = echarts.init(chartDom);
-  myChart.showLoading({ text: 'Fetching Map Data...', color: '#f47c3c', fontSize: 16 });
+  myChart.showLoading({ text: 'Fetching Map Data...', color: '#f97316', fontSize: 16 });
 
   apiCall("getStateHeatmap", "GET", { month, year }).then(data => {
     myChart.hideLoading();
     
     if (!data || data.length === 0) { 
       myChart.dispose();
-      chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:#888; font-size:18px; font-weight:bold;'>No Dispatches Found for this Month/Year.</div>"; 
+      chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:var(--text-muted); font-size:18px; font-weight:600;'>No Dispatches Found for this Month/Year.</div>"; 
       return; 
     }
     
@@ -810,7 +1180,7 @@ function loadHeatmap() {
   }).catch(err => {
     console.error("Heatmap Data Error:", err);
     myChart.dispose();
-    chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:red; font-weight:bold;'>Error loading map data</div>";
+    chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:var(--danger); font-weight:600;'>Error loading map data</div>";
   });
 }
 
@@ -835,8 +1205,9 @@ function renderHeatmap(myChart, data) {
           min: 0, 
           max: maxValue, 
           text: ['High', 'Low'],
-          inRange: { color: ['#fff3e0', '#ffb74d', '#f47c3c', '#d84315', '#990000'] },
-          calculable: true
+          inRange: { color: ['#ffedd5', '#fdba74', '#f97316', '#c2410c', '#7c2d12'] },
+          calculable: true,
+          textStyle: { color: '#475569' }
         },
         series: [{ 
           type: 'map', 
@@ -845,22 +1216,24 @@ function renderHeatmap(myChart, data) {
           roam: true, 
           label: { show: false },
           itemStyle: {
-            borderColor: '#9e9e9e',
+            borderColor: '#e2e8f0',
             borderWidth: 1,
-            areaColor: '#f4f6f9' 
+            areaColor: '#f8fafc' 
           },
           emphasis: { 
-            itemStyle: { areaColor: '#f1c40f', borderColor: '#333', borderWidth: 1.5 },
-            label: { show: true, color: '#000', fontWeight: 'bold' } 
+            itemStyle: { areaColor: '#fde047', borderColor: '#334155', borderWidth: 1.5 },
+            label: { show: true, color: '#0f172a', fontWeight: 'bold' } 
           }
         }]
       });
     })
     .catch(err => {
       console.error("GeoJSON Map Error:", err);
-      document.getElementById("heatmapContainer").innerHTML = "<p style='color:red; text-align:center; padding-top:200px;'>Failed to load the map graphic.</p>";
+      document.getElementById("heatmapContainer").innerHTML = "<p style='color:var(--danger); text-align:center; padding-top:200px;'>Failed to load the map graphic.</p>";
     });
 }
 </script>
 </body>
 </html>
+
+```
