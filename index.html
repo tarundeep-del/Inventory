@@ -194,7 +194,7 @@
     font-size: 0.9rem;
   }
   
-  /* SELECT2 OVERRIDES FOR LIGHT THEME */
+  /* SELECT2 OVERRIDES */
   .select2-container { width: 100% !important; margin: 0 0 16px 0 !important; }
   .select2-container .select2-selection--single { 
     height: 44px !important; 
@@ -283,7 +283,6 @@
   .btn-cancel:hover:not(:disabled) { 
     background: var(--border-color); 
   }
-
   .btn-link { 
     color: var(--accent-main); 
     font-weight: 600; 
@@ -552,15 +551,16 @@
     </div>
   </div>
 
-  <!-- NEW INVOICING TAB -->
+  <!-- INVOICING TAB -->
   <div id="invoicing" class="page" style="display:none">
     <h1>Invoicing Controls</h1>
     <div class="card-standard" style="max-width: 600px;">
       <h2>Generate Pending Invoices</h2>
       <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
-        Clicking the button below will automatically fetch the freshest sales data from your external sheet and then immediately generate PDFs for any pending records.
+        Sales data is now synced automatically in the background every hour from your SCM Master sheet.<br><br>
+        Click the button below to instantly generate PDF invoices for any records marked as <strong>PENDING</strong>.
       </p>
-      <button id="btnGenInvoices" onclick="triggerGenInvoices()" style="width:auto; padding: 14px 24px;">📄 Fetch Data & Generate PDFs</button>
+      <button id="btnGenInvoices" onclick="triggerGenInvoices()" style="width:auto; padding: 14px 24px;">📄 Generate Pending Invoices</button>
     </div>
   </div>
 
@@ -1230,34 +1230,20 @@ function renderHeatmap(myChart, data) {
 }
 
 /* =========================
-   INVOICE TRIGGERS (CHAINED)
+   INVOICE TRIGGERS
 ========================= */
 function triggerGenInvoices() {
   const btn = document.getElementById("btnGenInvoices");
   btn.disabled = true; 
-  btn.innerText = "⏳ 1/2: Fetching Sales Data...";
+  btn.innerText = "⚙️ Generating PDFs...";
   
-  // STEP 1: Fetch the sales data automatically
-  apiCall("fetchSalesData", "POST").then(res1 => {
-    if(res1.message && res1.message.includes("Error")) {
-      showToast(res1.message, true);
-      throw new Error("Fetch failed");
-    }
-    
-    showToast("Sales data synced! Generating PDFs...");
-    btn.innerText = "⚙️ 2/2: Generating PDFs...";
-    
-    // STEP 2: Wait for Step 1 to finish, then instantly generate the PDFs
-    return apiCall("generateInvoices", "POST");
-    
-  }).then(res2 => {
-    showToast(res2.message, res2.message.includes("Error"));
+  apiCall("generateInvoices", "POST").then(res => {
+    showToast(res.message, res.message.includes("Error"));
     btn.disabled = false; 
-    btn.innerText = "📄 Fetch Data & Generate PDFs";
-    
-  }).catch(err => {
+    btn.innerText = "📄 Generate Pending Invoices";
+  }).catch(() => {
     btn.disabled = false; 
-    btn.innerText = "📄 Fetch Data & Generate PDFs";
+    btn.innerText = "📄 Generate Pending Invoices";
   });
 }
 </script>
