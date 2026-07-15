@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -546,6 +545,18 @@
 
   <div id="outStock" class="page" style="display:none">
     <h1>Kit Dispatches (Outbound)</h1>
+
+    <!-- NEW INVOICE CONTROLS -->
+    <div class="card-standard" style="margin-bottom: 24px;">
+      <h2>Invoicing Controls</h2>
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px;">Fetch latest sales data from your external sheet, then generate PDFs for pending invoices.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button id="btnFetchSales" onclick="triggerFetchSales()" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">🔄 1. Fetch Sales Data</button>
+        <button id="btnGenInvoices" onclick="triggerGenInvoices()" style="width:auto;">📄 2. Generate Invoices (PDF)</button>
+      </div>
+    </div>
+    <!-- END INVOICE CONTROLS -->
+
     <div class="card-standard">
       <table>
         <thead><tr><th>Date & Time</th><th>Kit Dispatched</th><th>Partner</th><th>Quantity</th></tr></thead>
@@ -1218,8 +1229,39 @@ function renderHeatmap(myChart, data) {
       document.getElementById("heatmapContainer").innerHTML = "<p style='color:var(--danger); text-align:center; padding-top:200px;'>Failed to load the map graphic.</p>";
     });
 }
+
+/* =========================
+   INVOICE TRIGGERS
+========================= */
+function triggerFetchSales() {
+  const btn = document.getElementById("btnFetchSales");
+  btn.disabled = true; 
+  btn.innerText = "Fetching Data...";
+  
+  apiCall("fetchSalesData", "POST").then(res => {
+    showToast(res.message, res.message.includes("Error"));
+    btn.disabled = false; 
+    btn.innerText = "🔄 1. Fetch Sales Data";
+  }).catch(() => {
+    btn.disabled = false; 
+    btn.innerText = "🔄 1. Fetch Sales Data";
+  });
+}
+
+function triggerGenInvoices() {
+  const btn = document.getElementById("btnGenInvoices");
+  btn.disabled = true; 
+  btn.innerText = "Generating PDFs...";
+  
+  apiCall("generateInvoices", "POST").then(res => {
+    showToast(res.message, res.message.includes("Error"));
+    btn.disabled = false; 
+    btn.innerText = "📄 2. Generate Invoices (PDF)";
+  }).catch(() => {
+    btn.disabled = false; 
+    btn.innerText = "📄 2. Generate Invoices (PDF)";
+  });
+}
 </script>
 </body>
 </html>
-
-```
