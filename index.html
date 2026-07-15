@@ -10,9 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  /* * MODERN LIGHT THEME CSS 
-   * Palette based on Slate & Orange (Tailwind colors)
-   */
+  /* * MODERN LIGHT THEME CSS */
   :root {
     --bg-main: #f8fafc;
     --bg-surface: #ffffff;
@@ -20,9 +18,9 @@
     --text-secondary: #475569;
     --text-muted: #94a3b8;
     --border-color: #e2e8f0;
-    --accent-main: #f97316; /* Orange-500 */
-    --accent-hover: #ea580c; /* Orange-600 */
-    --accent-light: #ffedd5; /* Orange-100 */
+    --accent-main: #f97316;
+    --accent-hover: #ea580c;
+    --accent-light: #ffedd5;
     --danger: #ef4444;
     --danger-light: #fee2e2;
     --success: #22c55e;
@@ -426,6 +424,7 @@
   <a id="nav-lowStock" onclick="showPage('lowStock')">Low Stock</a>
   <a id="nav-inStock" onclick="showPage('inStock')">In Stock</a>
   <a id="nav-outStock" onclick="showPage('outStock')">Out Stock</a>
+  <a id="nav-invoicing" onclick="showPage('invoicing')">Invoicing</a>
   <a id="nav-heatmap" onclick="showPage('heatmap')">Heatmap</a>
   <a id="nav-bills" onclick="showPage('bills')">Bills History</a>
   <a id="nav-vendors" onclick="showPage('vendors')">Vendors</a>
@@ -545,23 +544,23 @@
 
   <div id="outStock" class="page" style="display:none">
     <h1>Kit Dispatches (Outbound)</h1>
-
-    <!-- NEW INVOICE CONTROLS -->
-    <div class="card-standard" style="margin-bottom: 24px;">
-      <h2>Invoicing Controls</h2>
-      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px;">Fetch latest sales data from your external sheet, then generate PDFs for pending invoices.</p>
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <button id="btnFetchSales" onclick="triggerFetchSales()" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">🔄 1. Fetch Sales Data</button>
-        <button id="btnGenInvoices" onclick="triggerGenInvoices()" style="width:auto;">📄 2. Generate Invoices (PDF)</button>
-      </div>
-    </div>
-    <!-- END INVOICE CONTROLS -->
-
     <div class="card-standard">
       <table>
         <thead><tr><th>Date & Time</th><th>Kit Dispatched</th><th>Partner</th><th>Quantity</th></tr></thead>
         <tbody id="outStockTable"><tr><td colspan="4">Loading history...</td></tr></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- NEW INVOICING TAB -->
+  <div id="invoicing" class="page" style="display:none">
+    <h1>Invoicing Controls</h1>
+    <div class="card-standard" style="max-width: 600px;">
+      <h2>Generate Pending Invoices</h2>
+      <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+        Clicking the button below will automatically fetch the freshest sales data from your external sheet and then immediately generate PDFs for any pending records.
+      </p>
+      <button id="btnGenInvoices" onclick="triggerGenInvoices()" style="width:auto; padding: 14px 24px;">📄 Fetch Data & Generate PDFs</button>
     </div>
   </div>
 
@@ -1231,35 +1230,34 @@ function renderHeatmap(myChart, data) {
 }
 
 /* =========================
-   INVOICE TRIGGERS
+   INVOICE TRIGGERS (CHAINED)
 ========================= */
-function triggerFetchSales() {
-  const btn = document.getElementById("btnFetchSales");
-  btn.disabled = true; 
-  btn.innerText = "Fetching Data...";
-  
-  apiCall("fetchSalesData", "POST").then(res => {
-    showToast(res.message, res.message.includes("Error"));
-    btn.disabled = false; 
-    btn.innerText = "🔄 1. Fetch Sales Data";
-  }).catch(() => {
-    btn.disabled = false; 
-    btn.innerText = "🔄 1. Fetch Sales Data";
-  });
-}
-
 function triggerGenInvoices() {
   const btn = document.getElementById("btnGenInvoices");
   btn.disabled = true; 
-  btn.innerText = "Generating PDFs...";
+  btn.innerText = "⏳ 1/2: Fetching Sales Data...";
   
-  apiCall("generateInvoices", "POST").then(res => {
-    showToast(res.message, res.message.includes("Error"));
+  // STEP 1: Fetch the sales data automatically
+  apiCall("fetchSalesData", "POST").then(res1 => {
+    if(res1.message && res1.message.includes("Error")) {
+      showToast(res1.message, true);
+      throw new Error("Fetch failed");
+    }
+    
+    showToast("Sales data synced! Generating PDFs...");
+    btn.innerText = "⚙️ 2/2: Generating PDFs...";
+    
+    // STEP 2: Wait for Step 1 to finish, then instantly generate the PDFs
+    return apiCall("generateInvoices", "POST");
+    
+  }).then(res2 => {
+    showToast(res2.message, res2.message.includes("Error"));
     btn.disabled = false; 
-    btn.innerText = "📄 2. Generate Invoices (PDF)";
-  }).catch(() => {
+    btn.innerText = "📄 Fetch Data & Generate PDFs";
+    
+  }).catch(err => {
     btn.disabled = false; 
-    btn.innerText = "📄 2. Generate Invoices (PDF)";
+    btn.innerText = "📄 Fetch Data & Generate PDFs";
   });
 }
 </script>
