@@ -58,7 +58,6 @@
     color: var(--text-primary);
     font-size: 1.25rem;
     font-weight: 700;
-    letter-spacing: -0.025em;
   }
   .sidebar a { 
     display: block; 
@@ -72,341 +71,76 @@
     font-size: 0.95rem;
     transition: all 0.2s ease;
   }
-  .sidebar a:hover { 
-    background: var(--bg-main); 
-    color: var(--text-primary); 
-  }
-  .sidebar a.active { 
-    background: var(--accent-light); 
-    color: var(--accent-hover); 
-    font-weight: 600;
-  }
+  .sidebar a:hover { background: var(--bg-main); color: var(--text-primary); }
+  .sidebar a.active { background: var(--accent-light); color: var(--accent-hover); font-weight: 600; }
 
   /* MAIN LAYOUT */
-  .main { 
-    margin-left: 240px; 
-    padding: 32px 40px; 
-    width: calc(100% - 240px); 
-    box-sizing: border-box; 
-  }
-  .page-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 24px; 
-  }
-  h1 { 
-    margin: 0 0 24px 0; 
-    font-size: 1.75rem; 
-    font-weight: 700; 
-    color: var(--text-primary);
-    letter-spacing: -0.025em;
-  }
-  h2 {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-top: 0;
-    margin-bottom: 20px;
-  }
-  h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
+  .main { margin-left: 240px; padding: 32px 40px; width: calc(100% - 240px); box-sizing: border-box; }
+  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  h1 { margin: 0 0 24px 0; font-size: 1.75rem; font-weight: 700; color: var(--text-primary); }
+  h2 { font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-top: 0; margin-bottom: 20px; }
+  h3 { font-size: 1rem; font-weight: 600; color: var(--text-secondary); }
 
-  /* GRIDS & CARDS */
-  .flex { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-    gap: 24px; 
-    align-items: stretch; 
-  }
-  .card, .card-standard { 
-    background: var(--bg-surface); 
-    padding: 24px; 
-    border-radius: var(--radius-lg); 
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm); 
-    overflow-x: auto; 
-    transition: box-shadow 0.2s ease;
-  }
-  .card:hover, .card-standard:hover {
-    box-shadow: var(--shadow-md);
-  }
-  .card { 
-    display: flex; 
-    flex-direction: column; 
-    margin-bottom: 0; 
-  }
-  .card-standard {
-    margin-bottom: 24px;
-  }
+  /* CARDS */
+  .flex { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; align-items: stretch; }
+  .card, .card-standard { background: var(--bg-surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow-x: auto; transition: box-shadow 0.2s ease; }
+  .card:hover, .card-standard:hover { box-shadow: var(--shadow-md); }
+  .card { display: flex; flex-direction: column; margin-bottom: 0; }
+  .card-standard { margin-bottom: 24px; }
   .card button { margin-top: auto; } 
-  .gauge-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-    gap: 24px; 
-    align-items: stretch; 
-  }
-  .gauge { 
-    text-align: center; 
-    padding: 24px; 
-    background: var(--bg-main); 
-    border-radius: var(--radius-md); 
-    border: 1px solid var(--border-color); 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-  }
+  .gauge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; align-items: stretch; }
+  .gauge { text-align: center; padding: 24px; background: var(--bg-main); border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .gauge h3 { min-height: 40px; margin: 0 0 10px 0; width: 100%; text-align: center; }
 
   /* FORMS & INPUTS */
-  input[type="text"], input[type="number"], input[type="date"], select, textarea { 
-    height: 44px; 
-    padding: 10px 14px; 
-    margin: 0 0 16px 0; 
-    width: 100%; 
-    border: 1px solid var(--border-color); 
-    border-radius: var(--radius-md); 
-    box-sizing: border-box; 
-    font-family: inherit; 
-    font-size: 0.95rem; 
-    color: var(--text-primary);
-    background-color: var(--bg-surface);
-    transition: all 0.2s ease;
-  }
-  input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--accent-main);
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
-  }
-  input::placeholder, textarea::placeholder {
-    color: var(--text-muted);
-  }
+  input[type="text"], input[type="number"], input[type="date"], select, textarea { height: 44px; padding: 10px 14px; margin: 0 0 16px 0; width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); box-sizing: border-box; font-family: inherit; font-size: 0.95rem; color: var(--text-primary); background-color: var(--bg-surface); transition: all 0.2s ease; }
+  input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-main); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15); }
+  input::placeholder, textarea::placeholder { color: var(--text-muted); }
   textarea { height: auto; min-height: 80px; } 
-  input[type="file"] { 
-    height: auto; 
-    padding: 10px 0; 
-    margin-bottom: 16px; 
-    border: none; 
-    font-size: 0.9rem;
-  }
+  input[type="file"] { height: auto; padding: 10px 0; margin-bottom: 16px; border: none; font-size: 0.9rem; }
   
   /* SELECT2 OVERRIDES */
   .select2-container { width: 100% !important; margin: 0 0 16px 0 !important; }
-  .select2-container .select2-selection--single { 
-    height: 44px !important; 
-    border: 1px solid var(--border-color) !important; 
-    border-radius: var(--radius-md) !important; 
-    display: flex !important; 
-    align-items: center !important; 
-    background-color: var(--bg-surface) !important;
-  }
-  .select2-container--open .select2-selection--single {
-    border-color: var(--accent-main) !important;
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
-  }
-  .select2-container--default .select2-selection--single .select2-selection__rendered { 
-    padding-left: 14px !important; 
-    font-size: 0.95rem; 
-    color: var(--text-primary) !important; 
-  }
-  .select2-container--default .select2-selection--single .select2-selection__placeholder {
-    color: var(--text-muted) !important;
-  }
-  .select2-container--default .select2-selection--single .select2-selection__arrow { 
-    height: 44px !important; 
-    right: 8px !important; 
-  }
-  .select2-dropdown { 
-    z-index: 99999 !important; 
-    border: 1px solid var(--border-color) !important;
-    border-radius: var(--radius-md) !important;
-    box-shadow: var(--shadow-md) !important;
-  }
-  .select2-results__option { font-size: 0.95rem; }
-  .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: var(--accent-main) !important;
-  }
-
-  /* BUTTONS */
-  button { 
-    padding: 12px 20px; 
-    background: var(--accent-main); 
-    border: none; 
-    border-radius: var(--radius-md); 
-    color: white; 
-    font-size: 0.95rem; 
-    font-weight: 600; 
-    cursor: pointer; 
-    transition: all 0.2s ease; 
-    width: 100%;
-    box-shadow: var(--shadow-sm);
-  }
-  button:hover:not(:disabled) { 
-    background: var(--accent-hover); 
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-  button:active:not(:disabled) {
-    transform: translateY(0);
-  }
-  button:disabled { 
-    background: #cbd5e1; 
-    cursor: not-allowed; 
-    box-shadow: none;
-  }
+  .select2-container .select2-selection--single { height: 44px !important; border: 1px solid var(--border-color) !important; border-radius: var(--radius-md) !important; display: flex !important; align-items: center !important; background-color: var(--bg-surface) !important; }
+  .select2-container--open .select2-selection--single { border-color: var(--accent-main) !important; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important; }
+  .select2-container--default .select2-selection--single .select2-selection__rendered { padding-left: 14px !important; font-size: 0.95rem; color: var(--text-primary) !important; }
+  .select2-container--default .select2-selection--single .select2-selection__arrow { height: 44px !important; right: 8px !important; }
   
-  .btn-small { 
-    padding: 8px 14px; 
-    font-size: 0.85rem; 
-    background: var(--bg-main); 
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    box-shadow: none;
-    width: auto; 
-  }
-  .btn-small:hover:not(:disabled) { 
-    background: var(--border-color); 
-    box-shadow: none;
-  }
-  .btn-cancel { 
-    background: var(--bg-main); 
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    display: none; 
-    width: auto; 
-    box-shadow: none;
-  }
-  .btn-cancel:hover:not(:disabled) { 
-    background: var(--border-color); 
-  }
-  .btn-link { 
-    color: var(--accent-main); 
-    font-weight: 600; 
-    text-decoration: none; 
-  }
-  .btn-link:hover { text-decoration: underline; }
+  /* BUTTONS */
+  button { padding: 12px 20px; background: var(--accent-main); border: none; border-radius: var(--radius-md); color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; width: 100%; box-shadow: var(--shadow-sm); }
+  button:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  button:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+  .btn-small { padding: 8px 14px; font-size: 0.85rem; background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color); width: auto; box-shadow: none; }
+  .btn-cancel { background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color); display: none; width: auto; box-shadow: none; }
+  .btn-link { color: var(--accent-main); font-weight: 600; text-decoration: none; }
 
   /* TABLES */
-  table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin-top: 8px; 
-    min-width: 600px; 
-  }
-  th, td { 
-    padding: 14px 16px; 
-    border-bottom: 1px solid var(--border-color); 
-    text-align: left; 
-    font-size: 0.95rem;
-  }
-  th { 
-    background: var(--bg-main); 
-    font-weight: 600; 
-    color: var(--text-secondary); 
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-  }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; min-width: 600px; }
+  th, td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); text-align: left; font-size: 0.95rem; }
+  th { background: var(--bg-main); font-weight: 600; color: var(--text-secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
   tr:hover td { background: var(--bg-main); }
   tr:last-child td { border-bottom: none; }
 
   /* UTILITIES & ALERTS */
-  .toast { 
-    position: fixed; 
-    top: 24px; 
-    right: 24px; 
-    background: var(--success); 
-    color: white; 
-    padding: 16px 24px; 
-    border-radius: var(--radius-md); 
-    box-shadow: var(--shadow-md); 
-    font-weight: 600; 
-    display: none; 
-    z-index: 999999; 
-    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-  }
+  .toast { position: fixed; top: 24px; right: 24px; background: var(--success); color: white; padding: 16px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); font-weight: 600; display: none; z-index: 999999; animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
   .toast.error { background: var(--danger); }
   @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  
   .loading { color: var(--text-muted); font-style: italic; }
-  .status-low { 
-    color: var(--danger); 
-    font-weight: 700; 
-    background: var(--danger-light); 
-    padding: 4px 10px; 
-    border-radius: 9999px; /* Pill shape */
-    font-size: 0.75rem;
-  }
+  .status-low { color: var(--danger); font-weight: 700; background: var(--danger-light); padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; }
+  .status-pending { color: var(--accent-hover); font-weight: 700; background: var(--accent-light); padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; }
 
-  .checkbox-group { 
-    margin: 0 0 16px 0; 
-    font-size: 0.95rem; 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    font-weight: 500; 
-    color: var(--text-secondary); 
-    height: 44px; 
-  }
-  .checkbox-group input[type="checkbox"] { 
-    width: 18px; 
-    height: 18px; 
-    margin: 0; 
-    cursor: pointer; 
-    accent-color: var(--accent-main);
-  }
-  .checkbox-group input[type="number"] { 
-    width: 100px; 
-    margin: 0; 
-    margin-left: auto; 
-  }
+  .checkbox-group { margin: 0 0 16px 0; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; font-weight: 500; color: var(--text-secondary); height: 44px; }
+  .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--accent-main); }
+  .checkbox-group input[type="number"] { width: 100px; margin: 0; margin-left: auto; }
 
-  /* RESPONSIVE DESIGN */
   @media (max-width: 768px) {
-    .sidebar { 
-      position: fixed; 
-      top: 0; left: 0; 
-      width: 100%; 
-      height: 64px; 
-      display: flex; 
-      flex-direction: row; 
-      overflow-x: auto; 
-      white-space: nowrap; 
-      padding: 0 16px; 
-      align-items: center; 
-      gap: 12px; 
-      border-right: none;
-      border-bottom: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-    }
+    .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: 64px; display: flex; flex-direction: row; overflow-x: auto; white-space: nowrap; padding: 0 16px; align-items: center; gap: 12px; border-right: none; border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
     .sidebar h2 { display: none; }
-    .sidebar a { 
-      display: inline-block; 
-      padding: 8px 16px; 
-      margin: 0; 
-      border-radius: 9999px; 
-      background: var(--bg-main); 
-      color: var(--text-secondary); 
-      border: 1px solid var(--border-color);
-    }
-    .sidebar a.active { 
-      background: var(--accent-main); 
-      color: white; 
-      border-color: var(--accent-main);
-    }
-    .main { 
-      margin-left: 0; 
-      margin-top: 64px; 
-      width: 100%; 
-      padding: 20px 16px; 
-    }
+    .sidebar a { display: inline-block; padding: 8px 16px; margin: 0; border-radius: 9999px; background: var(--bg-main); color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .sidebar a.active { background: var(--accent-main); color: white; border-color: var(--accent-main); }
+    .main { margin-left: 0; margin-top: 64px; width: 100%; padding: 20px 16px; }
     .flex { grid-template-columns: 1fr; }
     .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .gauge svg { width: 100%; max-width: 220px; }
   }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -442,19 +176,10 @@
       <h2>Kit Dispatches Comparison</h2>
       <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
         <select id="dashChartMonth" style="width:160px; margin:0;">
-          <option value="0">All Months</option>
-          <option value="1">January</option>
-          <option value="2">February</option>
-          <option value="3">March</option>
-          <option value="4">April</option>
-          <option value="5">May</option>
-          <option value="6">June</option>
-          <option value="7">July</option>
-          <option value="8">August</option>
-          <option value="9">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
+          <option value="0">All Months</option><option value="1">January</option><option value="2">February</option>
+          <option value="3">March</option><option value="4">April</option><option value="5">May</option>
+          <option value="6">June</option><option value="7">July</option><option value="8">August</option>
+          <option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
         </select>
         <input type="number" id="dashChartYear" style="width:120px; margin:0;">
         <button onclick="loadDashboardChart()" style="width:auto; margin:0;">Update Chart</button>
@@ -468,11 +193,8 @@
         <select id="kitSelect"><option></option></select>
         <input type="number" id="kitQty" placeholder="Quantity">
         <select id="deliveryPartner">
-          <option></option>
-          <option value="DTDC">DTDC</option>
-          <option value="Delhivery">Delhivery</option>
-          <option value="Trackon">Trackon</option>
-          <option value="India Post">India Post</option>
+          <option></option><option value="DTDC">DTDC</option><option value="Delhivery">Delhivery</option>
+          <option value="Trackon">Trackon</option><option value="India Post">India Post</option>
         </select>
         <button id="btnDispatch" onclick="dispatch()">Dispatch Kit</button>
       </div>
@@ -483,7 +205,6 @@
         <input type="number" id="stockQty" placeholder="Quantity">
         <select id="vendorSelect"><option></option></select>
         <input type="number" id="stockPrice" placeholder="Unit Price (₹)">
-        
         <div class="checkbox-group">
           <input type="checkbox" id="hasGst" onchange="toggleGst()">
           <label for="hasGst">Apply GST</label>
@@ -508,14 +229,7 @@
     <h1>Current Stock Summary</h1>
     <div class="card-standard">
       <table>
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Quantity Available</th>
-            <th>FD(kit)</th>
-            <th>Basic(kit)</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Product</th><th>Quantity Available</th><th>FD(kit)</th><th>Basic(kit)</th></tr></thead>
         <tbody id="stockTable"></tbody>
       </table>
     </div>
@@ -551,16 +265,25 @@
     </div>
   </div>
 
-  <!-- INVOICING TAB -->
+  <!-- UPDATED INVOICING TAB -->
   <div id="invoicing" class="page" style="display:none">
-    <h1>Invoicing Controls</h1>
-    <div class="card-standard" style="max-width: 600px;">
-      <h2>Generate Pending Invoices</h2>
-      <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
-        Sales data is now synced automatically in the background every hour from your SCM Master sheet.<br><br>
-        Click the button below to instantly generate PDF invoices for any records marked as <strong>PENDING</strong>.
+    <div class="page-header">
+      <h1>Invoicing Controls</h1>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button id="btnFetchSales" onclick="triggerFetchSales()" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">🔄 1. Fetch Sales Data</button>
+        <button id="btnGenInvoices" onclick="triggerGenInvoices()" style="width:auto;">📄 2. Generate Pending Invoices</button>
+      </div>
+    </div>
+
+    <div class="card-standard">
+      <h2>Pending Invoices Preview</h2>
+      <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px;">
+        Click <strong>Fetch Sales Data</strong> to pull new records from your master sheet. Review them here, then click <strong>Generate</strong> to create the PDFs.
       </p>
-      <button id="btnGenInvoices" onclick="triggerGenInvoices()" style="width:auto; padding: 14px 24px;">📄 Generate Pending Invoices</button>
+      <table>
+        <thead><tr><th>Customer Name</th><th>Phone</th><th>Kit Description</th><th>Machine</th><th>Status</th></tr></thead>
+        <tbody id="pendingInvoicesTable"><tr><td colspan="5" class="loading">Loading pending invoices...</td></tr></tbody>
+      </table>
     </div>
   </div>
 
@@ -586,7 +309,6 @@
       <input type="text" id="vendorName" placeholder="Vendor Name" style="max-width: 400px;">
       <input type="text" id="vendorMobile" placeholder="Mobile Number" style="max-width: 400px;">
       <textarea id="vendorProducts" placeholder="Products they supply" rows="3" style="max-width: 400px; resize: vertical;"></textarea>
-      
       <div style="display: flex; gap: 12px;">
         <button id="btnSaveVendor" onclick="submitVendor()" style="width:auto;">Save Vendor</button>
         <button id="btnCancelVendor" class="btn-cancel" onclick="toggleVendorForm(false)">Cancel</button>
@@ -607,19 +329,10 @@
     <div class="card-standard">
       <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
       <select id="heatmapMonth" style="width:160px; margin:0;">
-        <option value="0">All Months</option>
-        <option value="1">January</option>
-        <option value="2">February</option>
-        <option value="3">March</option>
-        <option value="4">April</option>
-        <option value="5">May</option>
-        <option value="6">June</option>
-        <option value="7">July</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-        <option value="10">October</option>
-        <option value="11">November</option>
-        <option value="12">December</option>
+        <option value="0">All Months</option><option value="1">January</option><option value="2">February</option>
+        <option value="3">March</option><option value="4">April</option><option value="5">May</option>
+        <option value="6">June</option><option value="7">July</option><option value="8">August</option>
+        <option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
       </select>
         <input type="number" id="heatmapYear" value="2026" style="width:120px; margin:0;">
         <button onclick="loadHeatmap()" style="width:auto; margin:0;">Generate Heatmap</button>
@@ -652,12 +365,9 @@
       <h2>Monthly Review</h2>
       <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap;">
         <select id="reportMonth" style="width:160px; margin:0;">
-          <option value="1">January</option><option value="2">February</option>
-          <option value="3">March</option><option value="4">April</option>
-          <option value="5">May</option><option value="6">June</option>
-          <option value="7">July</option><option value="8">August</option>
-          <option value="9">September</option><option value="10">October</option>
-          <option value="11">November</option><option value="12">December</option>
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option>
+          <option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option>
+          <option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
         </select>
         <input type="number" id="reportYear" value="2026" style="width:100px; margin:0;">
         <button onclick="loadMonthlyReports()" style="width:auto; margin:0;">Generate Report</button>
@@ -692,40 +402,29 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyNSAmozyV_-P3l3behutUu
    API Wrapper
 ========================= */
 async function apiCall(action, method = 'GET', data = {}) {
-  let url = API_URL;
-  let options = { redirect: "follow" };
-
+  let url = API_URL; let options = { redirect: "follow" };
   if (method === 'GET') {
-    const params = new URLSearchParams({ action, ...data });
-    url = `${API_URL}?${params.toString()}`;
+    url = `${API_URL}?${new URLSearchParams({ action, ...data }).toString()}`;
     options.method = 'GET';
   } else {
     options.method = 'POST';
     options.headers = { "Content-Type": "text/plain;charset=utf-8" };
     options.body = JSON.stringify({ action, data });
   }
-
   try {
     const response = await fetch(url, options);
     const result = await response.json();
     if (result.error) throw new Error(result.error);
     return result;
   } catch (error) {
-    console.error("API Error:", error);
     showToast("Error connecting to server. Check console.", true);
     throw error;
   }
 }
 
-/* =========================
-   Global Data Cache
-========================= */
 let appData = { stockSummary: [], products: [], kits: [], predictions: {}, vendors: [] };
 let cachedVendors = [];
 
-/* =========================
-   UI Utilities
-========================= */
 function showToast(message, isError=false){
   const toast = document.getElementById("toast");
   toast.innerText = message;
@@ -738,32 +437,18 @@ function toggleButtons(disabled) {
   document.getElementById("btnDispatch").disabled = disabled;
   document.getElementById("btnStock").disabled = disabled;
   document.getElementById("btnSubmitBill").disabled = disabled;
-  
   document.getElementById("btnDispatch").innerText = disabled ? "Processing..." : "Dispatch Kit";
   document.getElementById("btnStock").innerText = disabled ? "Processing..." : "Add Stock";
   document.getElementById("btnSubmitBill").innerText = disabled ? "Uploading..." : "Save Bill";
 }
 
-function formatDate(dateString){
-  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short'}); } catch(e) { return dateString || ""; }
-}
+function formatDate(dateString){ try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short'}); } catch(e) { return dateString || ""; } }
+function formatDateTime(dateString){ try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'}); } catch(e) { return dateString || ""; } }
+function toggleGst() { const gstInput = document.getElementById("gstPercent"); if (document.getElementById("hasGst").checked) { gstInput.style.display = "block"; } else { gstInput.style.display = "none"; gstInput.value = ""; } }
 
-function formatDateTime(dateString){
-  try { const d = new Date(dateString); return isNaN(d) ? dateString : d.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'}); } catch(e) { return dateString || ""; }
-}
-
-function toggleGst() {
-  const gstInput = document.getElementById("gstPercent");
-  if (document.getElementById("hasGst").checked) { gstInput.style.display = "block"; } else { gstInput.style.display = "none"; gstInput.value = ""; }
-}
-
-/* =========================
-   Navigation & Initialization
-========================= */
 function showPage(page){
   document.querySelectorAll('.page').forEach(p => p.style.display = "none");
   document.getElementById(page).style.display = "block";
-
   document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
   document.getElementById('nav-' + page).classList.add('active');
 
@@ -774,22 +459,18 @@ function showPage(page){
   if(page === "outStock") loadOutStock();
   if(page === "bills") loadBillsHistory();
   if(page === "vendors") loadVendors();
-  if(page === "heatmap"){
+  if(page === "invoicing") loadPendingInvoices();
+  
+  if(page === "heatmap" || page === "reports"){
     const d = new Date();
-    document.getElementById('heatmapMonth').value = d.getMonth() + 1;
-    document.getElementById('heatmapYear').value = d.getFullYear();
-    loadHeatmap();
-  }
-  if(page === "reports"){
-    const d = new Date();
-    document.getElementById('reportMonth').value = d.getMonth() + 1;
-    document.getElementById('reportYear').value = d.getFullYear();
+    document.getElementById(page==='heatmap'?'heatmapMonth':'reportMonth').value = d.getMonth() + 1;
+    document.getElementById(page==='heatmap'?'heatmapYear':'reportYear').value = d.getFullYear();
+    if(page === 'heatmap') loadHeatmap();
   }
 }
 
 function fetchAllData() {
   document.getElementById("gaugeContainer").innerHTML = '<span class="loading">Syncing data with server...</span>';
-  
   const d = new Date();
   document.getElementById('dashChartMonth').value = d.getMonth() + 1;
   document.getElementById('dashChartYear').value = d.getFullYear();
@@ -800,21 +481,14 @@ function fetchAllData() {
     renderDropdowns(data.products, data.kits, data.vendors);
     renderStock(data.stockSummary);
     renderLowStock(data.stockSummary);
-    
     loadDashboardChart();
     toggleButtons(false);
   });
 }
-
 window.onload = function() { fetchAllData(); };
 
-/* =========================
-   Core Rendering
-========================= */
 function renderDashboard(predictions) {
-  if(!predictions || !predictions.kits || predictions.kits.length === 0) {
-    document.getElementById("gaugeContainer").innerHTML = "<p>No kit configurations found.</p>"; return;
-  }
+  if(!predictions || !predictions.kits || predictions.kits.length === 0) { document.getElementById("gaugeContainer").innerHTML = "<p>No kit configurations found.</p>"; return; }
   let html = ""; 
   predictions.kits.forEach(k => { html += createGauge(k.kit, k.capacity, k.capacity || 1); });
   document.getElementById("gaugeContainer").innerHTML = html;
@@ -824,9 +498,7 @@ function createGauge(title, value, max){
   const safePercent = Math.min(max ? (value/max) : 0, 1);
   const circumference = Math.PI * 90;
   const offset = circumference - safePercent * circumference;
-
-  return `
-    <div class="gauge">
+  return `<div class="gauge">
       <h3>${title}</h3>
       <svg width="220" height="110" viewBox="0 0 220 120">
         <path d="M20 110 A90 90 0 0 1 200 110" fill="none" stroke="#e2e8f0" stroke-width="20"/>
@@ -837,12 +509,7 @@ function createGauge(title, value, max){
 }
 
 function renderStock(data){
-  const html = data.map(r => `<tr>
-    <td>${r.product}</td>
-    <td>${Number(r.stock).toLocaleString()}</td>
-    <td style="color: var(--text-primary); font-weight: 600;">${r.profCapacity}</td>
-    <td style="color: var(--text-primary); font-weight: 600;">${r.basicCapacity}</td>
-  </tr>`).join('');
+  const html = data.map(r => `<tr><td>${r.product}</td><td>${Number(r.stock).toLocaleString()}</td><td style="color: var(--text-primary); font-weight: 600;">${r.profCapacity}</td><td style="color: var(--text-primary); font-weight: 600;">${r.basicCapacity}</td></tr>`).join('');
   document.getElementById("stockTable").innerHTML = html || "<tr><td colspan='4'>No products found</td></tr>";
 }
 
@@ -853,385 +520,173 @@ function renderLowStock(data){
 
 function renderDropdowns(products, kits, vendors){
   const stockSelect = $("#stockSelect"), kitSelect = $("#kitSelect"), vendorSelect = $("#vendorSelect"), partnerSelect = $("#deliveryPartner");
-
   if (stockSelect.hasClass("select2-hidden-accessible")) stockSelect.select2('destroy');
   if (kitSelect.hasClass("select2-hidden-accessible")) kitSelect.select2('destroy');
   if (vendorSelect.hasClass("select2-hidden-accessible")) vendorSelect.select2('destroy');
   if (partnerSelect.hasClass("select2-hidden-accessible")) partnerSelect.select2('destroy');
-
   const prodHtml = '<option></option>' + products.map(p => `<option value="${p}">${p}</option>`).join('');
   const kitHtml = '<option></option>' + kits.map(k => `<option value="${k}">${k}</option>`).join('');
   const vendorHtml = '<option></option>' + (vendors || []).map(v => `<option value="${v.name}">${v.name}</option>`).join('');
-
   stockSelect.html(prodHtml).select2({ placeholder: "Search Item...", width: '100%' });
   kitSelect.html(kitHtml).select2({ placeholder: "Search Kit...", width: '100%' });
   vendorSelect.html(vendorHtml).select2({ placeholder: "Select Vendor (Optional)", width: '100%' });
   partnerSelect.select2({ placeholder: "Select Delivery Partner...", width: '100%', minimumResultsForSearch: Infinity });
 }
 
-/* =========================
-   Transactions Actions
-========================= */
 function dispatch(){
-  const kit = document.getElementById("kitSelect").value;
-  const qty = document.getElementById("kitQty").value;
-  const partner = document.getElementById("deliveryPartner").value;
-
+  const kit = document.getElementById("kitSelect").value; const qty = document.getElementById("kitQty").value; const partner = document.getElementById("deliveryPartner").value;
   if(!kit || !qty || qty <= 0) return showToast("Please select a kit and valid quantity.", true);
   if(!partner) return showToast("Please select a Delivery Partner.", true);
-
   toggleButtons(true);
-  
   apiCall("dispatchKit", "POST", { kit, qty, partner }).then(res => {
     showToast(res.message, res.message.includes("Insufficient"));
-    document.getElementById("kitQty").value = ''; 
-    $("#kitSelect").val(null).trigger('change'); 
-    $("#deliveryPartner").val(null).trigger('change'); 
+    document.getElementById("kitQty").value = ''; $("#kitSelect").val(null).trigger('change'); $("#deliveryPartner").val(null).trigger('change'); 
     fetchAllData();
   }).catch(() => toggleButtons(false));
 }
 
 function submitStockEntry(){
-  const payload = {
-    product: document.getElementById("stockSelect").value,
-    qty: document.getElementById("stockQty").value,
-    vendor: document.getElementById("vendorSelect").value,
-    price: document.getElementById("stockPrice").value,
-    hasGst: document.getElementById("hasGst").checked,
-    gstPercent: document.getElementById("gstPercent").value
-  };
-
+  const payload = { product: document.getElementById("stockSelect").value, qty: document.getElementById("stockQty").value, vendor: document.getElementById("vendorSelect").value, price: document.getElementById("stockPrice").value, hasGst: document.getElementById("hasGst").checked, gstPercent: document.getElementById("gstPercent").value };
   if(!payload.product || !payload.qty || payload.qty <= 0) return showToast("Please select an item and valid quantity.", true);
-
   toggleButtons(true);
-  
   apiCall("addStock", "POST", payload).then(res => {
     showToast(res.message);
-    document.getElementById("stockQty").value = ''; 
-    document.getElementById("stockPrice").value = ''; 
-    document.getElementById("hasGst").checked = false;
-    document.getElementById("gstPercent").value = '';
-    document.getElementById("gstPercent").style.display = 'none';
-    
-    $("#stockSelect").val(null).trigger('change'); 
-    $("#vendorSelect").val(null).trigger('change'); 
+    document.getElementById("stockQty").value = ''; document.getElementById("stockPrice").value = ''; document.getElementById("hasGst").checked = false; document.getElementById("gstPercent").value = ''; document.getElementById("gstPercent").style.display = 'none';
+    $("#stockSelect").val(null).trigger('change'); $("#vendorSelect").val(null).trigger('change'); 
     fetchAllData(); 
   }).catch(() => toggleButtons(false));
 }
 
 function processBill() {
-  const productName = document.getElementById("billProductName").value;
-  const date = document.getElementById("billDate").value;
-  const qty = document.getElementById("billQty").value;
-  const fileInput = document.getElementById("billFile");
-
+  const productName = document.getElementById("billProductName").value; const date = document.getElementById("billDate").value; const qty = document.getElementById("billQty").value; const fileInput = document.getElementById("billFile");
   if (!productName || !date || !qty) return showToast("Please fill in the Product Name, Date, and Quantity.", true);
-
   toggleButtons(true);
   const file = fileInput.files[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      sendBillToBackend({ productName, date, qty, fileData: e.target.result, fileName: file.name, mimeType: file.type });
-    };
+    reader.onload = function(e) { sendBillToBackend({ productName, date, qty, fileData: e.target.result, fileName: file.name, mimeType: file.type }); };
     reader.readAsDataURL(file); 
-  } else {
-    sendBillToBackend({ productName, date, qty, fileData: null, fileName: null, mimeType: null });
-  }
+  } else { sendBillToBackend({ productName, date, qty, fileData: null, fileName: null, mimeType: null }); }
 }
-
 function sendBillToBackend(payload) {
   apiCall("uploadBill", "POST", payload).then(res => {
-    showToast(res.message, res.message.includes("Error"));
-    toggleButtons(false);
-    
-    document.getElementById("billProductName").value = '';
-    document.getElementById("billDate").value = '';
-    document.getElementById("billQty").value = '';
-    document.getElementById("billFile").value = '';
+    showToast(res.message, res.message.includes("Error")); toggleButtons(false);
+    document.getElementById("billProductName").value = ''; document.getElementById("billDate").value = ''; document.getElementById("billQty").value = ''; document.getElementById("billFile").value = '';
   }).catch(() => toggleButtons(false));
 }
 
-/* =========================
-   Vendors Logic
-========================= */
 function toggleVendorForm(forceShow = null) {
   const card = document.getElementById("vendorFormCard"), btn = document.getElementById("btnToggleVendor");
   const shouldShow = forceShow !== null ? forceShow : card.style.display === "none";
-
-  if (shouldShow) {
-    card.style.display = "block"; btn.innerText = "✖ Close Form"; btn.style.background = "var(--danger)"; 
-  } else {
-    card.style.display = "none"; btn.innerText = "+ Add Vendor"; btn.style.background = "var(--accent-main)"; resetVendorForm();
-  }
+  if (shouldShow) { card.style.display = "block"; btn.innerText = "✖ Close Form"; btn.style.background = "var(--danger)"; } 
+  else { card.style.display = "none"; btn.innerText = "+ Add Vendor"; btn.style.background = "var(--accent-main)"; resetVendorForm(); }
 }
-
 function loadVendors() {
   document.getElementById("vendorsTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching vendors...</td></tr>";
-  apiCall("getVendors").then(data => {
-    cachedVendors = data;
+  apiCall("getVendors").then(data => { cachedVendors = data;
     const rows = data.map(v => `<tr><td>${v.name}</td><td>${v.mobile || '-'}</td><td>${v.products}</td><td><button class="btn-small" onclick="editVendor('${v.id}')">Edit</button></td></tr>`);
     document.getElementById("vendorsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No vendors recorded yet.</td></tr>";
   });
 }
-
 function submitVendor() {
-  const payload = {
-    id: document.getElementById("vendorId").value,
-    name: document.getElementById("vendorName").value,
-    mobile: document.getElementById("vendorMobile").value,
-    products: document.getElementById("vendorProducts").value
-  };
-
+  const payload = { id: document.getElementById("vendorId").value, name: document.getElementById("vendorName").value, mobile: document.getElementById("vendorMobile").value, products: document.getElementById("vendorProducts").value };
   if (!payload.name || !payload.products) return showToast("Please fill in the Vendor Name and Products.", true);
-
-  const btn = document.getElementById("btnSaveVendor");
-  btn.disabled = true; btn.innerText = "Saving...";
-
-  apiCall("saveVendor", "POST", payload).then(res => {
-    showToast(res.message, res.message.includes("Error"));
-    toggleVendorForm(false); 
-    loadVendors(); 
-    fetchAllData(); 
-  });
+  const btn = document.getElementById("btnSaveVendor"); btn.disabled = true; btn.innerText = "Saving...";
+  apiCall("saveVendor", "POST", payload).then(res => { showToast(res.message, res.message.includes("Error")); toggleVendorForm(false); loadVendors(); fetchAllData(); });
 }
-
 function editVendor(id) {
-  const vendor = cachedVendors.find(v => v.id === id);
-  if (!vendor) return;
-
-  toggleVendorForm(true);
-  document.getElementById("vendorFormTitle").innerText = "Edit Vendor";
-  document.getElementById("vendorId").value = vendor.id;
-  document.getElementById("vendorName").value = vendor.name;
-  document.getElementById("vendorMobile").value = vendor.mobile || ''; 
-  document.getElementById("vendorProducts").value = vendor.products;
-  
-  document.getElementById("btnCancelVendor").style.display = "inline-block";
-  document.getElementById("btnSaveVendor").innerText = "Update Vendor";
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const vendor = cachedVendors.find(v => v.id === id); if (!vendor) return;
+  toggleVendorForm(true); document.getElementById("vendorFormTitle").innerText = "Edit Vendor"; document.getElementById("vendorId").value = vendor.id; document.getElementById("vendorName").value = vendor.name; document.getElementById("vendorMobile").value = vendor.mobile || ''; document.getElementById("vendorProducts").value = vendor.products;
+  document.getElementById("btnCancelVendor").style.display = "inline-block"; document.getElementById("btnSaveVendor").innerText = "Update Vendor"; window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function resetVendorForm() {
-  document.getElementById("vendorFormTitle").innerText = "Add New Vendor";
-  document.getElementById("vendorId").value = '';
-  document.getElementById("vendorName").value = '';
-  document.getElementById("vendorMobile").value = ''; 
-  document.getElementById("vendorProducts").value = '';
-  document.getElementById("btnCancelVendor").style.display = "none";
-  
-  const btnSave = document.getElementById("btnSaveVendor");
-  btnSave.disabled = false; btnSave.innerText = "Save Vendor";
+  document.getElementById("vendorFormTitle").innerText = "Add New Vendor"; document.getElementById("vendorId").value = ''; document.getElementById("vendorName").value = ''; document.getElementById("vendorMobile").value = ''; document.getElementById("vendorProducts").value = '';
+  document.getElementById("btnCancelVendor").style.display = "none"; const btnSave = document.getElementById("btnSaveVendor"); btnSave.disabled = false; btnSave.innerText = "Save Vendor";
 }
 
-/* =========================
-   Table Fetches & Reports
-========================= */
-function loadInStock(){
-  document.getElementById("inStockTable").innerHTML = "<tr><td colspan='6' class='loading'>Fetching latest transactions...</td></tr>";
-  apiCall("getTransactions").then(data => {
-    const rows = data.inStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.item}</td><td>${r.vendor}</td><td style="color:var(--success); font-weight:600;">+${r.qty}</td><td>₹${Number(r.totalPrice).toFixed(2)}</td><td>${Math.round(r.updatedStock)}</td></tr>`);
-    document.getElementById("inStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='6'>No data</td></tr>";
-  });
-}
+function loadInStock(){ document.getElementById("inStockTable").innerHTML = "<tr><td colspan='6' class='loading'>Fetching latest transactions...</td></tr>"; apiCall("getTransactions").then(data => { const rows = data.inStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.item}</td><td>${r.vendor}</td><td style="color:var(--success); font-weight:600;">+${r.qty}</td><td>₹${Number(r.totalPrice).toFixed(2)}</td><td>${Math.round(r.updatedStock)}</td></tr>`); document.getElementById("inStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='6'>No data</td></tr>"; }); }
+function loadOutStock(){ document.getElementById("outStockTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching latest transactions...</td></tr>"; apiCall("getTransactions").then(data => { const rows = data.outStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.kit}</td><td>${r.partner}</td><td style="color:var(--danger); font-weight:600;">-${r.qty}</td></tr>`); document.getElementById("outStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No data</td></tr>"; }); }
+function loadBillsHistory() { document.getElementById("billsTable").innerHTML = "<tr><td colspan='5' class='loading'>Fetching bills...</td></tr>"; apiCall("getBillsHistory").then(data => { const rows = data.slice().reverse().map(r => { let fileLink = (r.fileUrl && r.fileUrl !== "No File Uploaded") ? `<a href="${r.fileUrl}" target="_blank" class="btn-link">📄 View Bill</a>` : "No File attached"; return `<tr><td>${formatDateTime(r.timestamp)}</td><td>${formatDate(r.date)}</td><td>${r.productName}</td><td>${r.qty}</td><td>${fileLink}</td></tr>`; }); document.getElementById("billsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='5'>No bills recorded yet.</td></tr>"; }); }
+function triggerExport(action, filename) { showToast("Compiling CSV..."); apiCall(action).then(res => { const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([res.csv], { type: 'text/csv' })); link.download = filename; link.click(); showToast("Download started!"); }); }
 
-function loadOutStock(){
-  document.getElementById("outStockTable").innerHTML = "<tr><td colspan='4' class='loading'>Fetching latest transactions...</td></tr>";
-  apiCall("getTransactions").then(data => {
-    const rows = data.outStock.slice().reverse().map(r => `<tr><td>${formatDateTime(r.date)}</td><td>${r.kit}</td><td>${r.partner}</td><td style="color:var(--danger); font-weight:600;">-${r.qty}</td></tr>`);
-    document.getElementById("outStockTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='4'>No data</td></tr>";
-  });
-}
-
-function loadBillsHistory() {
-  document.getElementById("billsTable").innerHTML = "<tr><td colspan='5' class='loading'>Fetching bills...</td></tr>";
-  apiCall("getBillsHistory").then(data => {
-    const rows = data.slice().reverse().map(r => {
-      let fileLink = (r.fileUrl && r.fileUrl !== "No File Uploaded") ? `<a href="${r.fileUrl}" target="_blank" class="btn-link">📄 View Bill</a>` : "No File attached";
-      return `<tr><td>${formatDateTime(r.timestamp)}</td><td>${formatDate(r.date)}</td><td>${r.productName}</td><td>${r.qty}</td><td>${fileLink}</td></tr>`;
-    });
-    document.getElementById("billsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='5'>No bills recorded yet.</td></tr>";
-  });
-}
-
-function triggerExport(action, filename) {
-  showToast("Compiling CSV...");
-  apiCall(action).then(res => {
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(new Blob([res.csv], { type: 'text/csv' }));
-    link.download = filename;
-    link.click();
-    showToast("Download started!");
-  });
-}
-
-function loadKitAnalytics() {
-  document.getElementById("analyticsTable").innerHTML = "<tr><td colspan='2' class='loading'>Calculating...</td></tr>";
-  apiCall("getKitAnalytics").then(data => {
-    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([kit, qty]) => `<tr><td>${kit}</td><td>${qty}</td></tr>`);
-    document.getElementById("analyticsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No data</td></tr>";
-  });
-}
-
+function loadKitAnalytics() { document.getElementById("analyticsTable").innerHTML = "<tr><td colspan='2' class='loading'>Calculating...</td></tr>"; apiCall("getKitAnalytics").then(data => { const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([kit, qty]) => `<tr><td>${kit}</td><td>${qty}</td></tr>`); document.getElementById("analyticsTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No data</td></tr>"; }); }
 function loadMonthlyReports() {
-  const month = document.getElementById("reportMonth").value;
-  const year = document.getElementById("reportYear").value;
-
-  document.getElementById("monthlyKitTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>";
-  document.getElementById("monthlyConsumptionTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>";
-
-  apiCall("getMonthlyReport", "GET", { month, year }).then(data => {
-    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k, q]) => `<tr><td>${k}</td><td>${q}</td></tr>`);
-    document.getElementById("monthlyKitTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No dispatches</td></tr>";
-  });
-
-  apiCall("getConsumptionReport", "GET", { month, year }).then(data => {
-    const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([i, q]) => `<tr><td>${i}</td><td>${q}</td></tr>`);
-    document.getElementById("monthlyConsumptionTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No consumption</td></tr>";
-  });
+  const month = document.getElementById("reportMonth").value; const year = document.getElementById("reportYear").value;
+  document.getElementById("monthlyKitTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>"; document.getElementById("monthlyConsumptionTable").innerHTML = "<tr><td colspan='2' class='loading'>Loading...</td></tr>";
+  apiCall("getMonthlyReport", "GET", { month, year }).then(data => { const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k, q]) => `<tr><td>${k}</td><td>${q}</td></tr>`); document.getElementById("monthlyKitTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No dispatches</td></tr>"; });
+  apiCall("getConsumptionReport", "GET", { month, year }).then(data => { const rows = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([i, q]) => `<tr><td>${i}</td><td>${q}</td></tr>`); document.getElementById("monthlyConsumptionTable").innerHTML = rows.length ? rows.join('') : "<tr><td colspan='2'>No consumption</td></tr>"; });
 }
 
-/* =========================
-   DASHBOARD BAR CHART
-========================= */
 function loadDashboardChart() {
-  const month = Number(document.getElementById("dashChartMonth").value);
-  const year = Number(document.getElementById("dashChartYear").value);
-  const chartDom = document.getElementById("kitBarChart");
-
-  let myChart = echarts.getInstanceByDom(chartDom);
-  if (myChart) { echarts.dispose(myChart); }
-  
-  myChart = echarts.init(chartDom);
-  myChart.showLoading({ text: 'Loading Chart Data...', color: '#f97316' });
-
+  const month = Number(document.getElementById("dashChartMonth").value); const year = Number(document.getElementById("dashChartYear").value); const chartDom = document.getElementById("kitBarChart");
+  let myChart = echarts.getInstanceByDom(chartDom); if (myChart) { echarts.dispose(myChart); }
+  myChart = echarts.init(chartDom); myChart.showLoading({ text: 'Loading Chart Data...', color: '#f97316' });
   apiCall("getMonthlyReport", "GET", { month, year }).then(data => {
-    myChart.hideLoading();
-    
-    const kits = Object.keys(data);
-    const quantities = Object.values(data);
-
-    if (kits.length === 0) {
-      myChart.dispose();
-      chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:var(--text-muted); font-weight:600;'>No Kit Dispatches Found For This Period.</div>";
-      return;
-    }
-
-    const option = {
-      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-      grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-      xAxis: { 
-        type: 'category', 
-        data: kits, 
-        axisLabel: { interval: 0, rotate: 15, color: '#475569' },
-        axisLine: { lineStyle: { color: '#e2e8f0' } }
-      },
-      yAxis: { 
-        type: 'value', 
-        name: 'Total Dispatched',
-        axisLabel: { color: '#475569' },
-        splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } }
-      },
-      series: [{
-        name: 'Kits Dispatched',
-        type: 'bar',
-        barWidth: '40%',
-        data: quantities,
-        itemStyle: { color: '#f97316', borderRadius: [4, 4, 0, 0] }
-      }]
-    };
-    myChart.setOption(option);
-  }).catch(err => {
-    myChart.dispose();
-    chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:var(--danger);'>Error loading chart</div>";
-  });
+    myChart.hideLoading(); const kits = Object.keys(data); const quantities = Object.values(data);
+    if (kits.length === 0) { myChart.dispose(); chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:var(--text-muted); font-weight:600;'>No Kit Dispatches Found For This Period.</div>"; return; }
+    myChart.setOption({ tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } }, grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true }, xAxis: { type: 'category', data: kits, axisLabel: { interval: 0, rotate: 15, color: '#475569' }, axisLine: { lineStyle: { color: '#e2e8f0' } } }, yAxis: { type: 'value', name: 'Total Dispatched', axisLabel: { color: '#475569' }, splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } } }, series: [{ name: 'Kits Dispatched', type: 'bar', barWidth: '40%', data: quantities, itemStyle: { color: '#f97316', borderRadius: [4, 4, 0, 0] } }] });
+  }).catch(err => { myChart.dispose(); chartDom.innerHTML = "<div style='text-align:center; padding-top:150px; color:var(--danger);'>Error loading chart</div>"; });
 }
 
-/* =========================
-   HEATMAP
-========================= */
 function loadHeatmap() {
-  const month = Number(document.getElementById("heatmapMonth").value);
-  const year = Number(document.getElementById("heatmapYear").value);
-  const chartDom = document.getElementById("heatmapContainer");
-
-  let myChart = echarts.getInstanceByDom(chartDom);
-  if (myChart) {
-    echarts.dispose(myChart);
-  }
-
-  myChart = echarts.init(chartDom);
-  myChart.showLoading({ text: 'Fetching Map Data...', color: '#f97316', fontSize: 16 });
-
+  const month = Number(document.getElementById("heatmapMonth").value); const year = Number(document.getElementById("heatmapYear").value); const chartDom = document.getElementById("heatmapContainer");
+  let myChart = echarts.getInstanceByDom(chartDom); if (myChart) { echarts.dispose(myChart); }
+  myChart = echarts.init(chartDom); myChart.showLoading({ text: 'Fetching Map Data...', color: '#f97316', fontSize: 16 });
   apiCall("getStateHeatmap", "GET", { month, year }).then(data => {
     myChart.hideLoading();
-    
-    if (!data || data.length === 0) { 
-      myChart.dispose();
-      chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:var(--text-muted); font-size:18px; font-weight:600;'>No Dispatches Found for this Month/Year.</div>"; 
-      return; 
-    }
-    
-    renderHeatmap(myChart, data);
-  }).catch(err => {
-    console.error("Heatmap Data Error:", err);
-    myChart.dispose();
-    chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:var(--danger); font-weight:600;'>Error loading map data</div>";
+    if (!data || data.length === 0) { myChart.dispose(); chartDom.innerHTML = "<div style='text-align:center; padding-top:200px; color:var(--text-muted); font-size:18px; font-weight:600;'>No Dispatches Found for this Month/Year.</div>"; return; }
+    fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json").then(res => res.json()).then(geoJson => {
+      echarts.registerMap('india', geoJson); let maxValue = Math.max(...data.map(d => d.value)); if (maxValue === 0 || !isFinite(maxValue)) maxValue = 10; 
+      myChart.setOption({ tooltip: { trigger: 'item', formatter: '{b}<br/>Total Dispatched: {c}' }, visualMap: { min: 0, max: maxValue, text: ['High', 'Low'], inRange: { color: ['#ffedd5', '#fdba74', '#f97316', '#c2410c', '#7c2d12'] }, calculable: true, textStyle: { color: '#475569' } }, series: [{ type: 'map', map: 'india', data: data, roam: true, label: { show: false }, itemStyle: { borderColor: '#e2e8f0', borderWidth: 1, areaColor: '#f8fafc' }, emphasis: { itemStyle: { areaColor: '#fde047', borderColor: '#334155', borderWidth: 1.5 }, label: { show: true, color: '#0f172a', fontWeight: 'bold' } } }] });
+    });
   });
 }
 
-function renderHeatmap(myChart, data) {
-  fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
-    .then(res => {
-      if (!res.ok) throw new Error("Map file not found");
-      return res.json();
-    })
-    .then(geoJson => {
-      echarts.registerMap('india', geoJson);
-      
-      let maxValue = Math.max(...data.map(d => d.value));
-      if (maxValue === 0 || !isFinite(maxValue)) maxValue = 10; 
-      
-      myChart.setOption({
-        tooltip: { 
-          trigger: 'item', 
-          formatter: '{b}<br/>Total Dispatched: {c}' 
-        },
-        visualMap: { 
-          min: 0, 
-          max: maxValue, 
-          text: ['High', 'Low'],
-          inRange: { color: ['#ffedd5', '#fdba74', '#f97316', '#c2410c', '#7c2d12'] },
-          calculable: true,
-          textStyle: { color: '#475569' }
-        },
-        series: [{ 
-          type: 'map', 
-          map: 'india', 
-          data: data,
-          roam: true, 
-          label: { show: false },
-          itemStyle: {
-            borderColor: '#e2e8f0',
-            borderWidth: 1,
-            areaColor: '#f8fafc' 
-          },
-          emphasis: { 
-            itemStyle: { areaColor: '#fde047', borderColor: '#334155', borderWidth: 1.5 },
-            label: { show: true, color: '#0f172a', fontWeight: 'bold' } 
-          }
-        }]
-      });
-    })
-    .catch(err => {
-      console.error("GeoJSON Map Error:", err);
-      document.getElementById("heatmapContainer").innerHTML = "<p style='color:var(--danger); text-align:center; padding-top:200px;'>Failed to load the map graphic.</p>";
-    });
+/* =========================
+   INVOICE TRIGGERS (FRONTEND UI)
+========================= */
+
+// 1. Fetch data from backend to show in table
+function loadPendingInvoices() {
+  document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='5' class='loading'>Loading pending invoices...</td></tr>";
+  
+  apiCall("getPendingInvoices").then(data => {
+    if(!data.invoices || data.invoices.length === 0) {
+      document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='5'>No pending invoices found. Try fetching new data.</td></tr>";
+      return;
+    }
+    
+    const rows = data.invoices.map(inv => `<tr>
+      <td>${inv.name || '-'}</td>
+      <td>${inv.phone || '-'}</td>
+      <td>${inv.desc || '-'}</td>
+      <td>${inv.machine || '-'}</td>
+      <td><span class="status-pending">PENDING</span></td>
+    </tr>`);
+    
+    document.getElementById("pendingInvoicesTable").innerHTML = rows.join('');
+  });
 }
 
-/* =========================
-   INVOICE TRIGGERS
-========================= */
+// 2. Fetch fresh data from source sheets
+function triggerFetchSales() {
+  const btn = document.getElementById("btnFetchSales");
+  btn.disabled = true; 
+  btn.innerText = "⏳ Fetching Data...";
+  showToast("Scanning source sheet for new entries...");
+  
+  apiCall("fetchSalesData", "POST").then(res => {
+    showToast(res.message, res.message.includes("Error"));
+    btn.disabled = false; 
+    btn.innerText = "🔄 1. Fetch Sales Data";
+    loadPendingInvoices(); // Refresh the table!
+  }).catch(() => {
+    btn.disabled = false; 
+    btn.innerText = "🔄 1. Fetch Sales Data";
+  });
+}
+
+// 3. Generate the PDFs
 function triggerGenInvoices() {
   const btn = document.getElementById("btnGenInvoices");
   btn.disabled = true; 
@@ -1240,10 +695,11 @@ function triggerGenInvoices() {
   apiCall("generateInvoices", "POST").then(res => {
     showToast(res.message, res.message.includes("Error"));
     btn.disabled = false; 
-    btn.innerText = "📄 Generate Pending Invoices";
+    btn.innerText = "📄 2. Generate Pending Invoices";
+    loadPendingInvoices(); // Refresh the table so generated ones disappear!
   }).catch(() => {
     btn.disabled = false; 
-    btn.innerText = "📄 Generate Pending Invoices";
+    btn.innerText = "📄 2. Generate Pending Invoices";
   });
 }
 </script>
