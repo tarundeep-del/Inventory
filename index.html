@@ -722,18 +722,27 @@ function switchInvoiceView(view) {
   }
 }
 
-// 1. Fetch Pending Invoices
+// 1. Fetch Pending Invoices (With Bulletproof Data Check)
 function loadPendingInvoices() {
   document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading pending invoices...</td></tr>";
-  document.getElementById("selectAll").checked = false; // Reset select all
+  document.getElementById("selectAll").checked = false; 
 
   apiCall("getPendingInvoices").then(data => {
-    if(!data || !data.invoices || data.invoices.length === 0) {
+    
+    // 🎯 BULLETPROOF CHECK
+    let invoiceArray = [];
+    if (Array.isArray(data)) {
+      invoiceArray = data;
+    } else if (data && Array.isArray(data.invoices)) {
+      invoiceArray = data.invoices;
+    }
+
+    if(invoiceArray.length === 0) {
       document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center;'>No pending invoices found.</td></tr>";
       return;
     }
     
-    const rows = data.invoices.map(inv => {
+    const rows = invoiceArray.map(inv => {
       return `
       <tr>
         <td><input type="checkbox" class="invoice-cb" value="${inv.rowIndex}"></td>
@@ -757,20 +766,32 @@ function loadPendingInvoices() {
     `});
     
     document.getElementById("pendingInvoicesTable").innerHTML = rows.join('');
+  }).catch(err => {
+    document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
+    console.error(err);
   });
 }
 
-// 2. Fetch Generated Invoices Archive
+// 2. Fetch Generated Invoices Archive (With Bulletproof Data Check)
 function loadGeneratedInvoices() {
   document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading generated archive...</td></tr>";
   
   apiCall("getGeneratedInvoices").then(data => {
-    if(!data || !data.invoices || data.invoices.length === 0) {
+    
+    // 🎯 BULLETPROOF CHECK
+    let invoiceArray = [];
+    if (Array.isArray(data)) {
+      invoiceArray = data;
+    } else if (data && Array.isArray(data.invoices)) {
+      invoiceArray = data.invoices;
+    }
+
+    if(invoiceArray.length === 0) {
       document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center;'>No generated invoices found.</td></tr>";
       return;
     }
     
-    const rows = data.invoices.map(inv => {
+    const rows = invoiceArray.map(inv => {
       const d = new Date(inv.date);
       const dateStr = isNaN(d.getTime()) ? '-' : d.toLocaleDateString('en-IN');
       
@@ -787,6 +808,9 @@ function loadGeneratedInvoices() {
     `});
     
     document.getElementById("generatedInvoicesTable").innerHTML = rows.join('');
+  }).catch(err => {
+    document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
+    console.error(err);
   });
 }
 
