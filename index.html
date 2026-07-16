@@ -169,6 +169,7 @@
   <a id="nav-inStock" onclick="showPage('inStock')">In Stock</a>
   <a id="nav-outStock" onclick="showPage('outStock')">Out Stock</a>
   <a id="nav-invoicing" onclick="showPage('invoicing')">Invoicing</a>
+  <a id="nav-dispatch" onclick="showPage('dispatch')">🚚 Dispatch Center</a>
   <a id="nav-heatmap" onclick="showPage('heatmap')">Heatmap</a>
   <a id="nav-bills" onclick="showPage('bills')">Bills History</a>
   <a id="nav-vendors" onclick="showPage('vendors')">Vendors</a>
@@ -276,7 +277,7 @@
     </div>
   </div>
 
-  <!-- UPGRADED INVOICING TAB (WITH SUB-TABS) -->
+  <!-- UPGRADED INVOICING TAB -->
   <div id="invoicing" class="page" style="display:none">
     <div class="page-header">
       <h1>Invoicing Controls</h1>
@@ -286,8 +287,6 @@
     </div>
 
     <div class="card-standard">
-      
-      <!-- SUB-TABS -->
       <div class="tab-container">
         <button id="tab-pending" class="tab-btn active" onclick="switchInvoiceView('pending')">Pending Invoices</button>
         <button id="tab-generated" class="tab-btn" onclick="switchInvoiceView('generated')">Generated Archive</button>
@@ -338,7 +337,40 @@
           <tbody id="generatedInvoicesTable"><tr><td colspan="7" class="loading">Loading generated archive...</td></tr></tbody>
         </table>
       </div>
+    </div>
+  </div>
 
+  <!-- 🚚 NEW: DISPATCH CENTER TAB -->
+  <div id="dispatch" class="page" style="display:none">
+    <div class="page-header">
+      <h1>🚚 Dispatch Center</h1>
+      <button onclick="loadDispatchData()" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">🔄 Refresh</button>
+    </div>
+
+    <div class="card-standard">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <input type="text" id="searchDispatch" onkeyup="filterDispatch()" placeholder="Search Name, Phone, or Tracking ID..." style="max-width: 350px; margin: 0;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button onclick="bulkDispatchAction('whatsapp')" style="width:auto; background: #25D366;">💬 Send WhatsApp</button>
+          <button onclick="bulkDispatchAction('email')" style="width:auto; background: #ea4335;">📧 Send Email</button>
+          <button onclick="bulkDispatchAction('both')" style="width:auto; background: var(--accent-main);">📨 Send Both</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 30px;"><input type="checkbox" id="selectAllDispatch" onchange="toggleAllDispatch(this)" title="Select All"></th>
+            <th>Tracking ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Course</th>
+            <th>Machine</th>
+            <th>Invoice</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="dispatchTableBody"><tr><td colspan="8" class="loading">Loading dispatch data...</td></tr></tbody>
+      </table>
     </div>
   </div>
 
@@ -480,6 +512,7 @@ async function apiCall(action, method = 'GET', data = {}) {
 
 let appData = { stockSummary: [], products: [], kits: [], predictions: {}, vendors: [] };
 let cachedVendors = [];
+let currentDispatchData = []; // Store dispatch data for local searching
 
 function showToast(message, isError=false){
   const toast = document.getElementById("toast");
@@ -518,6 +551,11 @@ function showPage(page){
   
   if(page === "invoicing") {
     switchInvoiceView('pending'); 
+  }
+
+  // 🚚 Trigger Dispatch Load
+  if(page === "dispatch") {
+    loadDispatchData();
   }
   
   if(page === "heatmap" || page === "reports"){
@@ -721,14 +759,11 @@ function switchInvoiceView(view) {
   }
 }
 
-// 1. Fetch Pending Invoices (Explicit GET with Advanced Structure Fallbacks)
 function loadPendingInvoices() {
   document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='8' class='loading'>Loading pending invoices...</td></tr>";
   document.getElementById("selectAll").checked = false; 
 
   apiCall("getPendingInvoices", "GET").then(data => {
-    console.log("Pending Data Payload Raw:", data);
-    
     let invoiceArray = [];
     if (data && Array.isArray(data.invoices)) {
       invoiceArray = data.invoices;
@@ -747,7 +782,7 @@ function loadPendingInvoices() {
       return `
       <tr>
         <td><input type="checkbox" class="invoice-cb" value="${inv.rowIndex}"></td>
-        <td><button class="arrow-btn" onclick="toggleDetails(${inv.rowIndex})" title="Show details">▶</button></td>
+        <td><button class="arrow-btn" onclick="toggleDetails('inv-${inv.rowIndex}')" title="Show details">▶</button></td>
         <td style="font-weight: 600; color: var(--text-primary);">${inv.name || '-'}</td>
         <td>${inv.phone || '-'}</td>
         <td>${inv.desc || inv.course || '-'}</td>
@@ -755,8 +790,8 @@ function loadPendingInvoices() {
         <td>${inv.address || "-"}</td>
         <td style="font-weight:600;">${Number(inv.codAmt||0)>0 ? "₹"+Number(inv.codAmt).toLocaleString("en-IN") : "-"}</td>
       </tr>
-      <tr id="details-${inv.rowIndex}" class="details-row" style="display:none;">
-        <td colspan="7">
+      <tr id="details-inv-${inv.rowIndex}" class="details-row" style="display:none;">
+        <td colspan="8">
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
             <div><strong>Delivery Address:</strong><br/>${inv.address || '-'}</div>
             <div><strong>Source Tab:</strong><br/>${inv.tab || '-'}</div>
@@ -774,13 +809,10 @@ function loadPendingInvoices() {
   });
 }
 
-// 2. Fetch Generated Invoices Archive (Explicit GET with Advanced Structure Fallbacks)
 function loadGeneratedInvoices() {
   document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='8' class='loading'>Loading generated archive...</td></tr>";
   
   apiCall("getGeneratedInvoices", "GET").then(data => {
-    console.log("Generated Data Payload Raw:", data);
-    
     let invoiceArray = [];
     if (data && Array.isArray(data.invoices)) {
       invoiceArray = data.invoices;
@@ -823,10 +855,12 @@ function toggleAllInvoices(source) {
   checkboxes.forEach(cb => cb.checked = source.checked);
 }
 
-function toggleDetails(rowIndex) {
-  const detailsRow = document.getElementById(`details-${rowIndex}`);
-  const isHidden = detailsRow.style.display === "none";
-  detailsRow.style.display = isHidden ? "table-row" : "none";
+function toggleDetails(rowId) {
+  const detailsRow = document.getElementById(`details-${rowId}`);
+  if (detailsRow) {
+    const isHidden = detailsRow.style.display === "none";
+    detailsRow.style.display = isHidden ? "table-row" : "none";
+  }
 }
 
 function triggerFetchSales() {
@@ -867,6 +901,162 @@ function triggerGenInvoices() {
     btn.disabled = false; 
     btn.innerText = "📄 Generate Selected Invoices";
   });
+}
+
+/* =========================
+   🚚 DISPATCH CENTER LOGIC 
+========================= */
+
+function loadDispatchData() {
+  document.getElementById("dispatchTableBody").innerHTML = "<tr><td colspan='8' class='loading'>Loading dispatch data...</td></tr>";
+  document.getElementById("selectAllDispatch").checked = false;
+  
+  apiCall("getTrackingData", "GET").then(res => {
+    currentDispatchData = res.data || [];
+    renderDispatchTable(currentDispatchData);
+  }).catch(err => {
+    document.getElementById("dispatchTableBody").innerHTML = "<tr><td colspan='8' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
+    console.error("Dispatch Load Error:", err);
+  });
+}
+
+function renderDispatchTable(data) {
+  if (!data || data.length === 0) {
+    document.getElementById("dispatchTableBody").innerHTML = "<tr><td colspan='8' style='text-align:center;'>No dispatched records found.</td></tr>";
+    return;
+  }
+  
+  const rows = data.map(row => {
+    const safeInvLink = row.invoiceLink ? `<a href="${row.invoiceLink}" target="_blank" class="btn-link">📄 PDF</a>` : '-';
+    const safeInvLinkFull = row.invoiceLink ? `<a href="${row.invoiceLink}" target="_blank" class="btn-link">View Document</a>` : '-';
+
+    return `
+    <tr>
+      <td><input type="checkbox" class="dispatch-cb" value="${row.rowIndex}"></td>
+      <td style="font-weight: 600; color: var(--text-primary);">${row.trackingId}</td>
+      <td style="font-weight: 500;">${row.name || '-'}</td>
+      <td>${row.phone || '-'}</td>
+      <td>${row.course || '-'}</td>
+      <td>${row.machine || '-'}</td>
+      <td>${safeInvLink}</td>
+      <td>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-small" onclick="trackShipment('${row.trackingId}')" title="Track">📍</button>
+          <button class="btn-small" style="color: #25D366; border-color:#25D366;" onclick="sendSingleWA('${row.rowIndex}')" title="WhatsApp">💬</button>
+          <button class="btn-small" style="color: #ea4335; border-color:#ea4335;" onclick="sendSingleEmail('${row.rowIndex}')" title="Email">📧</button>
+          <button class="btn-small" style="color: var(--accent-main); border-color:var(--accent-main);" onclick="sendSingleBoth('${row.rowIndex}')" title="Both">📨</button>
+          <button class="arrow-btn" onclick="toggleDetails('disp-${row.rowIndex}')" title="Show details">▶</button>
+        </div>
+      </td>
+    </tr>
+    <tr id="details-disp-${row.rowIndex}" class="details-row" style="display:none;">
+      <td colspan="8">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+          <div><strong>Email:</strong><br/>${row.email || '-'}</div>
+          <div><strong>Delivery Address:</strong><br/>${row.address || '-'}</div>
+          <div><strong>Tracking ID:</strong><br/>${row.trackingId}</div>
+          <div><strong>Invoice Link:</strong><br/>${safeInvLinkFull}</div>
+          <div><strong>Payment Mode:</strong><br/>${row.mop || '-'}</div>
+          <div><strong>COD Amount:</strong><br/>₹${row.codAmt || '0'}</div>
+        </div>
+      </td>
+    </tr>
+    `;
+  });
+  
+  document.getElementById("dispatchTableBody").innerHTML = rows.join('');
+}
+
+function filterDispatch() {
+  const term = document.getElementById("searchDispatch").value.toLowerCase();
+  const filtered = currentDispatchData.filter(r => 
+    (r.name || "").toLowerCase().includes(term) ||
+    (r.phone || "").toString().toLowerCase().includes(term) ||
+    (r.trackingId || "").toLowerCase().includes(term)
+  );
+  renderDispatchTable(filtered);
+}
+
+function trackShipment(trackingId) {
+  window.open(`https://www.aftership.com/track/${trackingId}`, '_blank');
+}
+
+function buildWAMessageClient(name, trackingId, invoiceLink) {
+  const msg = `Hi ${name || ""},\n\nYour Skillinabox kit has been dispatched.\n\nTracking ID:\n${trackingId}\n\nTrack Here:\nhttps://www.aftership.com/track/${trackingId}\n\nInvoice:\n${invoiceLink || "N/A"}\n\nRegards,\nSkillinabox Team`;
+  return encodeURIComponent(msg);
+}
+
+function sendSingleWA(rowIndex) {
+  const row = currentDispatchData.find(r => String(r.rowIndex) === String(rowIndex));
+  if (!row) return;
+  if (!row.phone) { showToast("No phone number available.", true); return; }
+  const url = `https://wa.me/91${row.phone}?text=${buildWAMessageClient(row.name, row.trackingId, row.invoiceLink)}`;
+  window.open(url, '_blank');
+}
+
+function sendSingleEmail(rowIndex) {
+  const row = currentDispatchData.find(r => String(r.rowIndex) === String(rowIndex));
+  if (!row) return;
+  if (!row.email) { showToast("No email address available for this user.", true); return; }
+  
+  showToast(`Sending email to ${row.name}...`);
+  apiCall("sendTrackingEmail", "POST", row).then(res => {
+    showToast(res.message, res.message.includes("Failed"));
+  }).catch(err => {
+    showToast("Error sending email.", true);
+  });
+}
+
+function sendSingleBoth(rowIndex) {
+  const row = currentDispatchData.find(r => String(r.rowIndex) === String(rowIndex));
+  if (!row) return;
+  
+  // 1. Trigger Email silently via backend
+  if (row.email) {
+    showToast(`Sending email & opening WhatsApp...`);
+    apiCall("sendTrackingEmail", "POST", row).then(res => {
+      console.log("Email Dispatch Log:", res.message);
+    });
+  } else {
+    showToast(`No email found, opening WhatsApp only.`);
+  }
+
+  // 2. Open WhatsApp immediately
+  if (row.phone) {
+    setTimeout(() => {
+      const url = `https://wa.me/91${row.phone}?text=${buildWAMessageClient(row.name, row.trackingId, row.invoiceLink)}`;
+      window.open(url, '_blank');
+    }, 300); // Slight delay ensures popup isn't blocked by the API call firing
+  } else {
+    showToast("No phone number available.", true);
+  }
+}
+
+function toggleAllDispatch(source) {
+  const checkboxes = document.querySelectorAll('.dispatch-cb');
+  checkboxes.forEach(cb => cb.checked = source.checked);
+}
+
+async function bulkDispatchAction(type) {
+  const checked = document.querySelectorAll('.dispatch-cb:checked');
+  if (checked.length === 0) { 
+    showToast("Please select at least one row to perform this action.", true); 
+    return; 
+  }
+  
+  for (let cb of checked) {
+    const rowIndex = cb.value;
+    if (type === 'whatsapp') {
+      sendSingleWA(rowIndex);
+      // Wait to prevent browser blocking multiple popups
+      await new Promise(r => setTimeout(r, 1200));
+    } else if (type === 'email') {
+      sendSingleEmail(rowIndex);
+    } else if (type === 'both') {
+      sendSingleBoth(rowIndex);
+      await new Promise(r => setTimeout(r, 1500));
+    }
+  }
 }
 </script>
 </body>
