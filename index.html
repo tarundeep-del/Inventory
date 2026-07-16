@@ -169,7 +169,7 @@
   <a id="nav-inStock" onclick="showPage('inStock')">In Stock</a>
   <a id="nav-outStock" onclick="showPage('outStock')">Out Stock</a>
   <a id="nav-invoicing" onclick="showPage('invoicing')">Invoicing</a>
-  <a id="nav-dispatch" onclick="showPage('dispatch')">🚚 Dispatch Center</a>
+  <a id="nav-dispatch" onclick="showPage('dispatch')">Dispatch Center</a>
   <a id="nav-heatmap" onclick="showPage('heatmap')">Heatmap</a>
   <a id="nav-bills" onclick="showPage('bills')">Bills History</a>
   <a id="nav-vendors" onclick="showPage('vendors')">Vendors</a>
@@ -982,7 +982,7 @@ function trackShipment(trackingId) {
 }
 
 function buildWAMessageClient(name, trackingId, invoiceLink) {
-  const msg = `Hi ${name || ""}! 🎉\n\nGreat news! Aapka Skillinabox kit successfully dispatch ho chuka hai aur jald hi aapke paas hoga. 📦✨\n\nAap apni kit ki delivery yahan track kar sakte hain:\n*Tracking ID:* ${trackingId}\n*Track Here:* https://www.aftership.com/track/${trackingId}\n\nAgar aapko koi bhi help chahiye ho, toh please feel free to reach out. Happy learning! 🚀\n\nWarm Regards,\nSkillinabox Team`;
+  const msg = `Hi ${name || ""}! \n\nGreat news! Aapka Skillinabox kit successfully dispatch ho chuka hai aur jald hi aapke paas hoga. \n\nAap apni kit ki delivery yahan track kar sakte hain:\n*Tracking ID:* ${trackingId}\n*Track Here:* https://www.aftership.com/track/${trackingId}\n\nAgar aapko koi bhi help chahiye ho, toh please feel free to reach out. Happy learning! \n\nWarm Regards,\nSkillinabox Team`;
   
   return encodeURIComponent(msg);
 }
