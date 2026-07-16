@@ -314,7 +314,7 @@
               <th>COD Amount</th>
             </tr>
           </thead>
-          <tbody id="pendingInvoicesTable"><tr><td colspan="7" class="loading">Loading pending invoices...</td></tr></tbody>
+          <tbody id="pendingInvoicesTable"><tr><td colspan="8" class="loading">Loading pending invoices...</td></tr></tbody>
         </table>
       </div>
 
@@ -723,7 +723,7 @@ function switchInvoiceView(view) {
 
 // 1. Fetch Pending Invoices (Explicit GET with Advanced Structure Fallbacks)
 function loadPendingInvoices() {
-  document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading pending invoices...</td></tr>";
+  document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='8' class='loading'>Loading pending invoices...</td></tr>";
   document.getElementById("selectAll").checked = false; 
 
   apiCall("getPendingInvoices", "GET").then(data => {
@@ -739,7 +739,7 @@ function loadPendingInvoices() {
     }
 
     if(!invoiceArray || invoiceArray.length === 0) {
-      document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center;'>No pending invoices found.</td></tr>";
+      document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='8' style='text-align:center;'>No pending invoices found.</td></tr>";
       return;
     }
     
@@ -752,7 +752,8 @@ function loadPendingInvoices() {
         <td>${inv.phone || '-'}</td>
         <td>${inv.desc || inv.course || '-'}</td>
         <td>${inv.machine || '-'}</td>
-        <td><span class="status-pending">PENDING</span></td>
+        <td>${inv.address || "-"}</td>
+        <td style="font-weight:600;">${Number(inv.codAmt||0)>0 ? "₹"+Number(inv.codAmt).toLocaleString("en-IN") : "-"}</td>
       </tr>
       <tr id="details-${inv.rowIndex}" class="details-row" style="display:none;">
         <td colspan="7">
@@ -768,14 +769,14 @@ function loadPendingInvoices() {
     
     document.getElementById("pendingInvoicesTable").innerHTML = rows.join('');
   }).catch(err => {
-    document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
+    document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='8' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
     console.error("Pending UI Render Error: ", err);
   });
 }
 
 // 2. Fetch Generated Invoices Archive (Explicit GET with Advanced Structure Fallbacks)
 function loadGeneratedInvoices() {
-  document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading generated archive...</td></tr>";
+  document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='8' class='loading'>Loading generated archive...</td></tr>";
   
   apiCall("getGeneratedInvoices", "GET").then(data => {
     console.log("Generated Data Payload Raw:", data);
@@ -812,7 +813,7 @@ function loadGeneratedInvoices() {
     
     document.getElementById("generatedInvoicesTable").innerHTML = rows.join('');
   }).catch(err => {
-    document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
+    document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='8' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
     console.error("Archive UI Render Error: ", err);
   });
 }
