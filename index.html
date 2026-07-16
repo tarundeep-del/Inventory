@@ -516,7 +516,6 @@ function showPage(page){
   if(page === "vendors") loadVendors();
   
   if(page === "invoicing") {
-    // Default to pending tab when opened
     switchInvoiceView('pending'); 
   }
   
@@ -705,7 +704,6 @@ function loadHeatmap() {
    INVOICE TAB LOGIC
 ========================= */
 
-// Switch between Pending and Generated sub-views
 function switchInvoiceView(view) {
   if (view === 'pending') {
     document.getElementById('view-pending').style.display = 'block';
@@ -722,22 +720,24 @@ function switchInvoiceView(view) {
   }
 }
 
-// 1. Fetch Pending Invoices (With Bulletproof Data Check)
+// 1. Fetch Pending Invoices (Explicit GET with Advanced Structure Fallbacks)
 function loadPendingInvoices() {
   document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading pending invoices...</td></tr>";
   document.getElementById("selectAll").checked = false; 
 
-  apiCall("getPendingInvoices").then(data => {
+  apiCall("getPendingInvoices", "GET").then(data => {
+    console.log("Pending Data Payload Raw:", data);
     
-    // 🎯 BULLETPROOF CHECK
     let invoiceArray = [];
-    if (Array.isArray(data)) {
-      invoiceArray = data;
-    } else if (data && Array.isArray(data.invoices)) {
+    if (data && Array.isArray(data.invoices)) {
       invoiceArray = data.invoices;
+    } else if (Array.isArray(data)) {
+      invoiceArray = data;
+    } else if (data && typeof data === 'object') {
+      invoiceArray = data.invoices || data.data || [];
     }
 
-    if(invoiceArray.length === 0) {
+    if(!invoiceArray || invoiceArray.length === 0) {
       document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center;'>No pending invoices found.</td></tr>";
       return;
     }
@@ -768,25 +768,27 @@ function loadPendingInvoices() {
     document.getElementById("pendingInvoicesTable").innerHTML = rows.join('');
   }).catch(err => {
     document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
-    console.error(err);
+    console.error("Pending UI Render Error: ", err);
   });
 }
 
-// 2. Fetch Generated Invoices Archive (With Bulletproof Data Check)
+// 2. Fetch Generated Invoices Archive (Explicit GET with Advanced Structure Fallbacks)
 function loadGeneratedInvoices() {
   document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading generated archive...</td></tr>";
   
-  apiCall("getGeneratedInvoices").then(data => {
+  apiCall("getGeneratedInvoices", "GET").then(data => {
+    console.log("Generated Data Payload Raw:", data);
     
-    // 🎯 BULLETPROOF CHECK
     let invoiceArray = [];
-    if (Array.isArray(data)) {
-      invoiceArray = data;
-    } else if (data && Array.isArray(data.invoices)) {
+    if (data && Array.isArray(data.invoices)) {
       invoiceArray = data.invoices;
+    } else if (Array.isArray(data)) {
+      invoiceArray = data;
+    } else if (data && typeof data === 'object') {
+      invoiceArray = data.invoices || data.data || [];
     }
 
-    if(invoiceArray.length === 0) {
+    if(!invoiceArray || invoiceArray.length === 0) {
       document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center;'>No generated invoices found.</td></tr>";
       return;
     }
@@ -810,17 +812,15 @@ function loadGeneratedInvoices() {
     document.getElementById("generatedInvoicesTable").innerHTML = rows.join('');
   }).catch(err => {
     document.getElementById("generatedInvoicesTable").innerHTML = "<tr><td colspan='7' style='text-align:center; color: var(--danger);'>Error loading data. Check console.</td></tr>";
-    console.error(err);
+    console.error("Archive UI Render Error: ", err);
   });
 }
 
-// Select All / Deselect All logic
 function toggleAllInvoices(source) {
   const checkboxes = document.querySelectorAll('.invoice-cb');
   checkboxes.forEach(cb => cb.checked = source.checked);
 }
 
-// Expand / Collapse details logic
 function toggleDetails(rowIndex) {
   const detailsRow = document.getElementById(`details-${rowIndex}`);
   const isHidden = detailsRow.style.display === "none";
@@ -837,7 +837,7 @@ function triggerFetchSales() {
     showToast(res.message, res.message.includes("Error"));
     btn.disabled = false; 
     btn.innerText = "🔄 1. Fetch Sales Data";
-    loadPendingInvoices(); // Refresh the table
+    loadPendingInvoices(); 
   }).catch(() => {
     btn.disabled = false; 
     btn.innerText = "🔄 1. Fetch Sales Data";
@@ -845,26 +845,22 @@ function triggerFetchSales() {
 }
 
 function triggerGenInvoices() {
-  // Grab all checked boxes
   const checkedBoxes = document.querySelectorAll('.invoice-cb:checked');
   if(checkedBoxes.length === 0) {
     showToast("Please select at least one invoice to generate.", true);
     return;
   }
 
-  // Convert checkbox values (Row Indexes) into an array
   const selectedRows = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
-
   const btn = document.getElementById("btnGenInvoices");
   btn.disabled = true; 
   btn.innerText = `⚙️ Generating ${selectedRows.length} PDF(s)...`;
   
-  // Note: Uses "generateInvoices" to map to your backend setup wrapper
   apiCall("generateInvoices", "POST", { selectedRows: selectedRows }).then(res => {
     showToast(res.message, res.message.includes("Error"));
     btn.disabled = false; 
     btn.innerText = "📄 Generate Selected Invoices";
-    loadPendingInvoices(); // Refresh pending to remove generated items
+    loadPendingInvoices(); 
   }).catch(() => {
     btn.disabled = false; 
     btn.innerText = "📄 Generate Selected Invoices";
