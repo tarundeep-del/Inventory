@@ -343,7 +343,7 @@
   <!-- 🚚 NEW: DISPATCH CENTER TAB -->
   <div id="dispatch" class="page" style="display:none">
     <div class="page-header">
-      <h1>🚚 Dispatch Center</h1>
+      <h1>Dispatch Center</h1>
       <button onclick="loadDispatchData()" style="width:auto; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); box-shadow:none;">🔄 Refresh</button>
     </div>
 
@@ -982,7 +982,8 @@ function trackShipment(trackingId) {
 }
 
 function buildWAMessageClient(name, trackingId, invoiceLink) {
-  const msg = `Hi ${name || ""},\n\nYour Skillinabox kit has been dispatched.\n\nTracking ID:\n${trackingId}\n\nTrack Here:\nhttps://www.aftership.com/track/${trackingId}\n\nInvoice:\n${invoiceLink || "N/A"}\n\nRegards,\nSkillinabox Team`;
+  const msg = `Hi ${name || ""}! 🎉\n\nGreat news! Aapka Skillinabox kit successfully dispatch ho chuka hai aur jald hi aapke paas hoga. 📦✨\n\nAap apni kit ki delivery yahan track kar sakte hain:\n*Tracking ID:* ${trackingId}\n*Track Here:* https://www.aftership.com/track/${trackingId}\n\nAgar aapko koi bhi help chahiye ho, toh please feel free to reach out. Happy learning! 🚀\n\nWarm Regards,\nSkillinabox Team`;
+  
   return encodeURIComponent(msg);
 }
 
