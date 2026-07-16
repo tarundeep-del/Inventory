@@ -661,25 +661,37 @@ function loadHeatmap() {
 ========================= */
 
 function loadPendingInvoices() {
-  document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading pending invoices...</td></tr>";
+  document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7' class='loading'>Loading invoices...</td></tr>";
   document.getElementById("selectAll").checked = false; // Reset select all
 
   apiCall("getPendingInvoices").then(data => {
     if(!data.invoices || data.invoices.length === 0) {
-      document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7'>No pending invoices found. Try fetching new data.</td></tr>";
+      document.getElementById("pendingInvoicesTable").innerHTML = "<tr><td colspan='7'>No invoices found. Try fetching new data.</td></tr>";
       return;
     }
     
-    // Map through records and build a standard row PLUS a hidden details row underneath
-    const rows = data.invoices.map(inv => `
+    const rows = data.invoices.map(inv => {
+      const isGenerated = inv.status === "GENERATED";
+      
+      // If generated, show a checkmark instead of a checkbox
+      const cbHtml = isGenerated 
+        ? `<span style="color:var(--success); font-weight:bold;" title="Already Generated">✓</span>` 
+        : `<input type="checkbox" class="invoice-cb" value="${inv.rowIndex}">`;
+      
+      // If generated, show a clickable PDF link instead of the "PENDING" badge
+      const statusHtml = isGenerated 
+        ? `<a href="${inv.pdfLink}" target="_blank" style="color:var(--success); font-weight:600; text-decoration:none;">📄 View PDF</a>`
+        : `<span class="status-pending">PENDING</span>`;
+
+      return `
       <tr>
-        <td><input type="checkbox" class="invoice-cb" value="${inv.rowIndex}"></td>
+        <td>${cbHtml}</td>
         <td><button class="arrow-btn" onclick="toggleDetails(${inv.rowIndex})" title="Show details">▶</button></td>
         <td style="font-weight: 500;">${inv.name || '-'}</td>
         <td>${inv.phone || '-'}</td>
         <td>${inv.desc || '-'}</td>
         <td>${inv.machine || '-'}</td>
-        <td><span class="status-pending">PENDING</span></td>
+        <td>${statusHtml}</td>
       </tr>
       <tr id="details-${inv.rowIndex}" class="details-row" style="display:none;">
         <td colspan="7">
@@ -690,7 +702,7 @@ function loadPendingInvoices() {
           </div>
         </td>
       </tr>
-    `);
+    `});
     
     document.getElementById("pendingInvoicesTable").innerHTML = rows.join('');
   });
