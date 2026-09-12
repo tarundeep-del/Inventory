@@ -1624,18 +1624,29 @@ function renderLowStock(data) {
 function renderDropdowns(products, kits, vendors) {
   const stockSelect = $("#stockSelect"), kitSelect = $("#kitSelect"), vendorSelect = $("#vendorSelect"), partnerSelect = $("#deliveryPartner");
   const itemOutSelect = $("#itemOutSelect"), itemOutPartner = $("#itemOutPartner");
+
   if (stockSelect.hasClass("select2-hidden-accessible")) stockSelect.select2('destroy');
   if (kitSelect.hasClass("select2-hidden-accessible")) kitSelect.select2('destroy');
   if (itemOutSelect.hasClass("select2-hidden-accessible")) itemOutSelect.select2('destroy');
   if (vendorSelect.hasClass("select2-hidden-accessible")) vendorSelect.select2('destroy');
   if (partnerSelect.hasClass("select2-hidden-accessible")) partnerSelect.select2('destroy');
   if (itemOutPartner.hasClass("select2-hidden-accessible")) itemOutPartner.select2('destroy');
-  const prodHtml = '<option></option>' + products.map(p => `<option value="${p}">${p}</option>`).join('');
-  const kitHtml = '<option></option>' + kits.map(k => `<option value="${k}">${k}</option>`).join('');
+
+  const prodHtml = products.map(p => `<option value="${p}">${p}</option>`).join('');
+  const kitHtml = kits.map(k => `<option value="${k}">${k}</option>`).join('');
+  
+  // Merge Kits and Products for the unified Stock Entry (IN) dropdown
+  const mergedInwardHtml = '<option></option>' + 
+    '<optgroup label="Complete Kits">' + kitHtml + '</optgroup>' + 
+    '<optgroup label="Raw Items">' + prodHtml + '</optgroup>';
+
   const vendorHtml = '<option></option>' + (vendors || []).map(v => `<option value="${v.name}">${v.name}</option>`).join('');
-  stockSelect.html(prodHtml).select2({ placeholder: "Search item…", width: '100%' });
-  itemOutSelect.html(prodHtml).select2({ placeholder: "Search item to dispatch…", width: '100%' });
-  kitSelect.html(kitHtml).select2({ placeholder: "Search kit…", width: '100%' });
+  
+  stockSelect.html(mergedInwardHtml).select2({ placeholder: "Search item or kit…", width: '100%' });
+  
+  itemOutSelect.html('<option></option>' + prodHtml).select2({ placeholder: "Search item to dispatch…", width: '100%' });
+  kitSelect.html('<option></option>' + kitHtml).select2({ placeholder: "Search kit…", width: '100%' });
+  
   vendorSelect.html(vendorHtml).select2({ placeholder: "Select vendor (optional)", width: '100%' });
   partnerSelect.select2({ placeholder: "Select delivery partner…", width: '100%', minimumResultsForSearch: Infinity });
   itemOutPartner.select2({ placeholder: "Select delivery partner…", width: '100%', minimumResultsForSearch: Infinity });
@@ -1675,17 +1686,35 @@ function dispatchItem() {
 }
 
 function submitStockEntry() {
+  const selectedValue = document.getElementById("stockSelect").value;
+  const qty = document.getElementById("stockQty").value;
+  const vendor = document.getElementById("vendorSelect").value;
+  const price = document.getElementById("stockPrice").value;
+  const hasGst = document.getElementById("hasGst").checked;
+  const gstPercent = document.getElementById("gstPercent").value;
+
+  if (!selectedValue || !qty || qty <= 0) return showToast("Please select an item or kit and valid quantity.", true);
+  
+  // Determine if it is a Kit or a Raw Item based on appData
+  const isKit = appData.kits.includes(selectedValue);
+  const action = isKit ? "addStockByKit" : "addStock";
+  
   const payload = {
-    product: document.getElementById("stockSelect").value,
-    qty: document.getElementById("stockQty").value,
-    vendor: document.getElementById("vendorSelect").value,
-    price: document.getElementById("stockPrice").value,
-    hasGst: document.getElementById("hasGst").checked,
-    gstPercent: document.getElementById("gstPercent").value
+    qty: qty, 
+    vendor: vendor, 
+    price: price, 
+    hasGst: hasGst, 
+    gstPercent: gstPercent
   };
-  if (!payload.product || !payload.qty || payload.qty <= 0) return showToast("Please select an item and valid quantity.", true);
+  
+  if (isKit) {
+    payload.kit = selectedValue;
+  } else {
+    payload.product = selectedValue;
+  }
+
   toggleButtons(true);
-  apiCall("addStock", "POST", payload).then(res => {
+  apiCall(action, "POST", payload).then(res => {
     showToast(res.message);
     document.getElementById("stockQty").value = '';
     document.getElementById("stockPrice").value = '';
